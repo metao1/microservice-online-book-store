@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>com.metao.product.retails</groupId>
+    <artifactId>retails</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <name>retails-microservice</name>
+    <description>Product Retails Microservice</description>
+
+    <parent>
+        <groupId>com.metao.product</groupId>
+        <artifactId>product</artifactId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.hateoas</groupId>
+            <artifactId>spring-hateoas</artifactId>
+        </dependency>
+
+        <!-- cassandra-->
+        <!--        <dependency>-->
+        <!--            <groupId>com.yugabyte</groupId>-->
+        <!--            <artifactId>cassandra-driver-core</artifactId>-->
+        <!--            <version>3.2.0-yb-19</version>-->
+        <!--        </dependency>-->
+        <!--        <dependency>-->
+        <!--            <groupId>org.springframework.data</groupId>-->
+        <!--            <artifactId>spring-data-cassandra</artifactId>-->
+        <!--        </dependency>-->
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-cassandra</artifactId>
+
+        </dependency>
+        <dependency>
+            <groupId>com.yugabyte</groupId>
+            <artifactId>cassandra-driver-core</artifactId>
+            <version>3.2.0-yb-19</version>
+        </dependency>
+        <dependency>
+            <groupId>com.yugabyte</groupId>
+            <artifactId>cassandra-driver-extras</artifactId>
+            <version>3.2.0-yb-19</version>
+            <optional>true</optional>
+        </dependency>
+    </dependencies>
+</project>
