@@ -8,10 +8,9 @@ eureka:
   client:
     enabled: false
 
-
 spring:
   datasource:
-    url: jdbc:tc:postgresql:11.1:///integration-tests-db
+    url: jdbc:tc:postgresql:13.1:///integration-tests-db
     driver-class-name: org.testcontainers.jdbc.ContainerDatabaseDriver
   jpa:
     properties:
@@ -27,7 +26,7 @@ spring:
       schema.registry.url: mock://not-used
       auto.register.schemas: true
       use.latest.version: true
-      security.protocol: plaintext
+      security.protocol: PLAINTEXT
       json:
         fail.invalid.schema: true
         oneof.for.nullables: false
@@ -48,3 +47,7 @@ spring:
               type:
                 headers: false
     bootstrap-servers: localhost:9092
+
+logging:
+  level:
+    org.apache.kafka.streams.kstream: INFO
