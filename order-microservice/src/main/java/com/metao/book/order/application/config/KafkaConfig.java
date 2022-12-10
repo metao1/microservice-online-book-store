@@ -15,13 +15,24 @@ import org.springframework.validation.annotation.Validated;
 public class KafkaConfig {
 
     @Bean
-    public NewTopic orders(@Value("${kafka.topic.order}") String topic) {
+    public NewTopic orderTopic(@Value("${kafka.topic.order}") String topic) {
         return TopicBuilder
             .name(topic)
-            .partitions(3)
+            .partitions(1)
             .config(TopicConfig.COMPRESSION_TYPE_CONFIG, "zstd")
             .compact()
             .build();
     }
+
+    @Bean
+    public NewTopic productTopic(@Value("${kafka.topic.product}") String topic) {
+        return TopicBuilder
+            .name(topic)
+            .partitions(1)
+            .config(TopicConfig.COMPRESSION_TYPE_CONFIG, "zstd")
+            .compact()
+            .build();
+    }
+
 
 }

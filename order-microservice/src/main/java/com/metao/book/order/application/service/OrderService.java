@@ -7,7 +7,9 @@ import com.metao.book.order.infrastructure.repository.KafkaOrderService;
 import com.metao.book.shared.Currency;
 import com.metao.book.shared.OrderEvent;
 import com.metao.book.shared.Status;
+import com.metao.book.shared.application.service.FileHandler;
 import java.io.IOException;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -31,7 +33,6 @@ public class OrderService implements OrderServiceInterface {
     private final KafkaTemplate<String, OrderEvent> kafkaTemplate;
     private final KafkaOrderService kafkaOrderService;
     private final KafkaOrderProducer kafkaProducer;
-    private final FileHandler fileHandler;
     private final ProductDtoMapper mapper;
     AtomicInteger atomicInteger = new AtomicInteger(1);
     @Value("${kafka.topic.order}")
@@ -56,9 +57,10 @@ public class OrderService implements OrderServiceInterface {
                     .setOrderId(s + "")
                     .setProductId(productAsinList.get(random.nextInt(productAsinList.size())))
                     .setCustomerId(CUSTOMER_ID)
-                        .setStatus(Status.NEW)
-                        .setQuantity(1)
-                        .setPrice(100)
+                    .setStatus(Status.NEW)
+                    .setQuantity(1)
+                    .setPrice(100)
+                    .setCreatedOn(Instant.now().toEpochMilli())
                         .setCurrency(Currency.dlr)
                         .setSource("PAYMENT")
                         .build())
@@ -67,13 +69,13 @@ public class OrderService implements OrderServiceInterface {
 
     public void loadProducts() {
         log.info("importing products data from resources");
-        try (var source = fileHandler.readFromFile("data/products.txt")) {
+        try (var source = FileHandler.readFromFile(getClass(), "data/products.txt")) {
             this.productAsinList = source
-                    .map(mapper::convertToDto)
-                    .filter(Optional::isPresent)
-                    .map(Optional::get)
-                    .map(ProductDTO::getAsin)
-                    .toList();
+                .map(mapper::convertToDto)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .map(ProductDTO::getAsin)
+                .toList();
         } catch (IOException e) {
             log.error(e.getMessage(), e);
         }

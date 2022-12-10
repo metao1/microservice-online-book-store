@@ -47,7 +47,7 @@ spring:
       value-serializer: io.confluent.kafka.serializers.KafkaAvroSerializer
     streams:
       properties:
-        application.id: stock
+        application.id: product
         bootstrap.servers: ${BOOTSTRAP_SERVERS}
         schema.registry.url: ${SCHEMA_HOST}
         default.key.serde: org.apache.kafka.common.serialization.Serdes$StringSerde

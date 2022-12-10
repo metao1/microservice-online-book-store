@@ -1,0 +1,27 @@
+{
+    "type": "record",
+    "name": "ReservationEvent",
+    "namespace": "com.metao.book.shared",
+    "fields": [
+        {
+            "name": "created_on",
+            "type": "long"
+        },
+        {
+            "name": "productId",
+            "type": "string"
+        },
+        {
+            "name": "customerId",
+            "type": "string"
+        },
+        {
+            "name": "reserved",
+            "type": "double"
+        },
+        {
+            "name": "available",
+            "type": "double"
+        }
+    ]
+}
