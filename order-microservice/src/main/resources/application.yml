@@ -11,6 +11,7 @@ kafka:
   topic:
     product: "product"
     order: "order"
+    reservation: "reservation"
     payment: "payment"
 
 spring:

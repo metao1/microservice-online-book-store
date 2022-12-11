@@ -9,19 +9,35 @@
         },
         {
             "name": "productId",
-            "type": "string"
+            "type": [
+                "null",
+                "string"
+            ],
+            "default": null
         },
         {
             "name": "customerId",
-            "type": "string"
+            "type": [
+                "null",
+                "string"
+            ],
+            "default": null
         },
         {
             "name": "reserved",
-            "type": "double"
+            "type": [
+                "null",
+                "double"
+            ],
+            "default": null
         },
         {
             "name": "available",
-            "type": "double"
+            "type": [
+                "null",
+                "double"
+            ],
+            "default": null
         }
     ]
 }

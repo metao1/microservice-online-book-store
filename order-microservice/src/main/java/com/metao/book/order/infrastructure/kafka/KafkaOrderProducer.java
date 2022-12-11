@@ -4,6 +4,7 @@ import com.metao.book.shared.OrderEvent;
 import javax.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.kafka.config.StreamsBuilderFactoryBean;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 
@@ -13,7 +14,7 @@ import org.springframework.stereotype.Component;
 public class KafkaOrderProducer {
 
     private final KafkaTemplate<String, OrderEvent> kafkaTemplate;
-
+    private final StreamsBuilderFactoryBean s;
     public void send(String topic, @NotBlank String orderId, @NotBlank OrderEvent order) {
         log.info("sending order='{}' to topic='{}'", order, topic);
         kafkaTemplate.send(topic, orderId, order)

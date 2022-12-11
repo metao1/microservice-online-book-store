@@ -25,6 +25,16 @@ public class KafkaConfig {
     }
 
     @Bean
+    public NewTopic reservationTopic(@Value("${kafka.topic.reservation}") String topic) {
+        return TopicBuilder
+            .name(topic)
+            .partitions(1)
+            .config(TopicConfig.COMPRESSION_TYPE_CONFIG, "zstd")
+            .compact()
+            .build();
+    }
+
+    @Bean
     public NewTopic productTopic(@Value("${kafka.topic.product}") String topic) {
         return TopicBuilder
             .name(topic)
