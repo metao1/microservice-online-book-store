@@ -1,6 +1,5 @@
 package com.metao.book.checkout.application;
 
-import java.util.Random;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.admin.NewTopic;
@@ -21,9 +20,6 @@ import org.springframework.validation.annotation.Validated;
 @RequiredArgsConstructor
 @EnableConfigurationProperties({KafkaProperties.class})
 public class KafkaConfig {
-
-    private final Random random = new Random();
-    private final CheckoutService checkoutService;
 
     @Bean
     public NewTopic paymentTopic(@Value("${kafka.topic.payment}") String topic) {
