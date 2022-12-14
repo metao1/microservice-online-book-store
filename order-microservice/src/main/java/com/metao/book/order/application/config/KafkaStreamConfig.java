@@ -8,7 +8,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.kafka.KafkaProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
+@Configuration
 @RequiredArgsConstructor
 @EnableConfigurationProperties({KafkaProperties.class})
 public class KafkaStreamConfig {
@@ -16,21 +18,21 @@ public class KafkaStreamConfig {
     private final KafkaProperties properties;
 
     @Bean
-    SpecificAvroSerde<ProductEvent> productEventSpecificAvroSerde(KafkaProperties kafkaProperties) {
+    public SpecificAvroSerde<ProductEvent> productValuesSerdes() {
         var result = new SpecificAvroSerde<ProductEvent>();
-        result.configure(kafkaProperties.getProperties(), false);
+        result.configure(properties.getProperties(), false);
         return result;
     }
 
     @Bean
-    SpecificAvroSerde<ReservationEvent> reservationEventSpecificAvroSerde(KafkaProperties kafkaProperties) {
+    public SpecificAvroSerde<ReservationEvent> reservationValuesSerde() {
         var result = new SpecificAvroSerde<ReservationEvent>();
-        result.configure(kafkaProperties.getProperties(), false);
+        result.configure(properties.getProperties(), false);
         return result;
     }
 
     @Bean
-    SpecificAvroSerde<OrderEvent> OrderEventSerde() {
+    public SpecificAvroSerde<OrderEvent> OrderEventSerde() {
         var serde = new SpecificAvroSerde<OrderEvent>();
         serde.configure(properties.getProperties(), false);
         return serde;

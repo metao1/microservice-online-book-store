@@ -12,6 +12,7 @@ import com.metao.book.shared.Currency;
 import com.metao.book.shared.OrderEvent;
 import com.metao.book.shared.Status;
 import com.metao.book.shared.test.TestUtils.StreamBuilder;
+import java.time.Instant;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.Test;
@@ -58,6 +59,7 @@ public class OrderControllerTest extends SpringBootEmbeddedKafka {
             .setStatus(Status.NEW)
             .setQuantity(1)
             .setPrice(RAND.nextInt(100))
+            .setCreatedOn(Instant.now().toEpochMilli())
             .setCurrency(Currency.dlr)
             .build();
     }

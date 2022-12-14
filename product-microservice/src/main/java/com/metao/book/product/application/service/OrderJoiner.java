@@ -5,7 +5,9 @@ import com.metao.book.shared.ReservationEvent;
 import com.metao.book.shared.Status;
 import javax.transaction.Transactional;
 import org.apache.kafka.streams.kstream.ValueJoiner;
+import org.springframework.stereotype.Component;
 
+@Component
 public class OrderJoiner implements ValueJoiner<ReservationEvent, OrderEvent, OrderEvent> {
 
     /**
