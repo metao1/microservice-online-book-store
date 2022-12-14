@@ -8,7 +8,6 @@ import com.metao.book.shared.Status;
 import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde;
 import java.time.Instant;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.StreamsBuilder;
@@ -22,7 +21,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.annotation.EnableKafkaStreams;
 
-@Slf4j
 @Configuration
 @EnableKafkaStreams
 @RequiredArgsConstructor
@@ -38,7 +36,9 @@ public class ProductStreamConfig {
         NewTopic productTopic,
         SpecificAvroSerde<ProductEvent> productValuesSerdes
     ) {
-        return builder.stream(productTopic.name(), Consumed.with(Serdes.String(), productValuesSerdes));
+        return builder
+            .stream(productTopic.name(), Consumed.with(Serdes.String(), productValuesSerdes))
+            .filter((key, product) -> product.getVolume() > 0);
     }
 
     @Bean
@@ -52,39 +52,53 @@ public class ProductStreamConfig {
             .filter((id, order) -> order.getStatus().equals(Status.NEW));
     }
 
+//    reservationTable
+//        .toStream()
+//        .selectKey((k, v) -> v.getProductId())
+//        .groupByKey(Grouped.with(Serdes.String(), reservationSerds))
+//        .aggregate(() -> 0.0d,
+//        (key, order, total) -> order.getReserved(),
+//        Materialized.with(Serdes.String(), Serdes.Double())
+//        )
+//        .leftJoin(productStream.toTable(),
+//                (value1, value2) -> {
+//        value2.setVolume(value2.getVolume() - value1);
+//        return value2;
+//    }, Materialized.with(Serdes.String(), productSerds)
+//        );
+
     @Bean
-    public KStream<String, OrderEvent> productReservationStream(
+    public KStream<String, OrderEvent> productOrderStream(
         KTable<String, ReservationEvent> reservationTable,
         KStream<String, OrderEvent> orderStream
     ) {
         return reservationTable
             .toStream()
-            .leftJoin(
-                orderStream.toTable(),
-                orderJoiner
-            );
+            .selectKey((id, order) -> order.getProductId())
+            .leftJoin(orderStream.toTable(),
+                orderJoiner);
     }
 
     @Bean
     public KTable<String, ReservationEvent> reservationTable(
-        KStream<String, OrderEvent> orderStream,
         KStream<String, ProductEvent> productStream,
+        KStream<String, OrderEvent> orderStream,
         SpecificAvroSerde<OrderEvent> orderValuesSerdes
     ) {
         return orderStream
             .selectKey((k, v) -> v.getProductId())
             .groupByKey(Grouped.with(Serdes.String(), orderValuesSerdes))
-            .count()
+            .aggregate(() -> 0.0, (key, order, total) -> total + order.getQuantity()
+                , Materialized.with(Serdes.String(), Serdes.Double()))
             .leftJoin(
                 productStream.toTable(),
-                (value1, value2) -> ReservationEvent.newBuilder()
+                (reserved, product) -> ReservationEvent.newBuilder()
                     .setCreatedOn(Instant.now().toEpochMilli())
-                    .setProductId(value2.getProductId())
-                    .setAvailable(value2.getVolume() - value1)
-                    .setReserved(value1.doubleValue())
+                    .setProductId(product.getProductId())
+                    .setAvailable(product.getVolume() - reserved)
+                    .setReserved(reserved)
                     .setCustomerId(CUSTOMER_ID)
                     .build(),
-                Materialized.as("order-reservation")
-            );
+                Materialized.as("order-reservation-state-storew"));
     }
 }

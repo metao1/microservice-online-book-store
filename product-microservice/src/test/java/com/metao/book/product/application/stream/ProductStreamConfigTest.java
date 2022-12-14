@@ -1,6 +1,7 @@
 package com.metao.book.product.application.stream;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.metao.book.product.application.config.ProductStreamConfig;
 import com.metao.book.product.application.service.OrderJoiner;
@@ -44,27 +45,26 @@ class ProductStreamConfigTest {
         var productStream = kafkaStreamsConfig.productStream(
             sb,
             productInputTopicName,
-            productSerds
-        );
+            productSerds);
+
         var orderStream = kafkaStreamsConfig.orderStream(
             sb,
             orderInputTopicName,
-            orderSerds
-        );
-        var reservationTable = kafkaStreamsConfig.reservationTable(
-                orderStream,
-                productStream,
-                orderSerds
-            );
-           reservationTable
-               .toStream()
-               .to(reservationTopicName.name());
+            orderSerds);
 
-        kafkaStreamsConfig.productReservationStream(
-                reservationTable,
-                orderStream
-            )
-            .to(orderStockTopicName.name());
+        var reservationTable = kafkaStreamsConfig.reservationTable(
+            productStream,
+            orderStream,
+            orderSerds);
+
+        reservationTable
+            .toStream()
+            .to(reservationTopicName.name());
+
+        kafkaStreamsConfig.productOrderStream(
+            reservationTable,
+            orderStream
+        ).to(orderStockTopicName.name());
 
         try (final TopologyTestDriver testDriver = new TopologyTestDriver(sb.build(), streamProps)) {
             var orderList = createOrderInput();
@@ -81,23 +81,53 @@ class ProductStreamConfigTest {
             var outputTopic = testDriver.createOutputTopic(orderStockTopicName.name(),
                 Serdes.String().deserializer(),
                 orderSerds.deserializer());
-            var reservationTopic = testDriver.createOutputTopic(reservationTopicName.name(),
+
+            var reservationOutput = testDriver.createOutputTopic(reservationTopicName.name(),
                 Serdes.String().deserializer(),
                 reservationSerds.deserializer());
-            OrderEvent expectedValues;
+
+            OrderEvent expectedOrderValues;
             while (!outputTopic.isEmpty()) {
-                expectedValues = outputTopic.readValue();
-                log.info("order:" + expectedValues);
-                assertThat(expectedValues).isNotNull();
-                //assertThat(expectedValues).isEqualTo(10);
+                expectedOrderValues = outputTopic.readValue();
+                log.info("order:" + expectedOrderValues);
+                assertThat(expectedOrderValues)
+                    .extracting(OrderEvent::getStatus)
+                    .isEqualTo(Status.ACCEPT)
+                    .isNotNull();
             }
+
             ReservationEvent expectedReservationValues;
-            while (!reservationTopic.isEmpty()) {
-                expectedReservationValues = reservationTopic.readValue();
-                log.info("reservation:" + expectedReservationValues);
-                assertThat(expectedReservationValues).isNotNull();
-                //assertThat(expectedValues).isEqualTo(10);
-            }
+            expectedReservationValues = reservationOutput.readValue();
+            log.info("reservation:" + expectedReservationValues);
+            assertThat(expectedReservationValues)
+                .satisfies(reservationEvent -> {
+                    assertEquals(98, (double) reservationEvent.getAvailable());
+                    assertEquals(2, (double) reservationEvent.getReserved());
+                    assertEquals(reservationEvent.getProductId(), PRODUCT_ID);
+                    assertEquals(reservationEvent.getCustomerId(), "CUSTOMER_ID");
+                })
+                .isNotNull();
+
+            expectedReservationValues = reservationOutput.readValue();
+            assertThat(expectedReservationValues)
+                .satisfies(reservationEvent -> {
+                    assertEquals(97, (double) reservationEvent.getAvailable());
+                    assertEquals(3, (double) reservationEvent.getReserved());
+                    assertEquals(reservationEvent.getProductId(), PRODUCT_ID);
+                    assertEquals(reservationEvent.getCustomerId(), "CUSTOMER_ID");
+                })
+                .isNotNull();
+
+            expectedReservationValues = reservationOutput.readValue();
+            assertThat(expectedReservationValues)
+                .satisfies(reservationEvent -> {
+                    assertEquals(99, (double) reservationEvent.getAvailable());
+                    assertEquals(1, (double) reservationEvent.getReserved());
+                    assertEquals(reservationEvent.getProductId(), PRODUCT_ID2);
+                    assertEquals(reservationEvent.getCustomerId(), "CUSTOMER_ID");
+                })
+                .isNotNull();
+
         }
     }
 

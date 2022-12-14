@@ -38,7 +38,8 @@ public class OrderStreamTest {
         orderEventStream
             .groupByKey()
             .aggregate(() -> 0.0, (key, order, total) -> total + order.getPrice()
-                , Materialized.with(Serdes.String(), Serdes.Double()))
+                , Materialized.with(Serdes.String(), Serdes.Double())
+            )
             .toStream()
             .to(outputTopicName, Produced.with(Serdes.String(), Serdes.Double()));
         try (final TopologyTestDriver testDriver = new TopologyTestDriver(sb.build(), streamProps)) {

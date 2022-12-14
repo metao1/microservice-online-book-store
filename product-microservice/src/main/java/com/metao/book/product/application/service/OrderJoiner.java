@@ -11,8 +11,8 @@ public class OrderJoiner implements ValueJoiner<ReservationEvent, OrderEvent, Or
     /**
      * Return a joined value consisting of {@code value1} and {@code value2}.
      *
-     * @param value1 the first value for joining
-     * @param value2 the second value for joining
+     * @param reservation the first value for joining
+     * @param order       the second value for joining
      * @return the joined value
      */
     @Override
