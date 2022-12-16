@@ -21,9 +21,9 @@ spring:
     # Required connection configs for Confluent Cloud Schema Registry
     properties:
       stream-properties:
-        application-id: order
+        application-id: order-ms
         schema.registry.url: ${SCHEMA_HOST}
-        application.id: order
+        application.id: order-ms
         bootstrap.servers: ${BOOTSTRAP_SERVERS}
       bootstrap-servers: ${BOOTSTRAP_SERVERS}
       security.protocol: SASL_SSL
@@ -55,7 +55,7 @@ spring:
       value-serializer: io.confluent.kafka.serializers.KafkaAvroSerializer
     streams:
       properties:
-        application.id: order
+        application.id: order-ms
         bootstrap.servers: ${BOOTSTRAP_SERVERS}
         schema.registry.url: ${SCHEMA_HOST}
         default.key.serde: org.apache.kafka.common.serialization.Serdes$StringSerde
@@ -66,7 +66,7 @@ spring:
         topic.max.message.bytes: 8388608 # 84 MiB
         topology.optimization: all
         state.dir: /tmp/kafka-streams
-      application-id: order
+      application-id: order-ms
   output.ansi.enabled: ALWAYS
   cloud:
     discovery:

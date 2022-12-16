@@ -23,8 +23,6 @@ import org.springframework.validation.annotation.Validated;
 @EnableConfigurationProperties(KafkaProperties.class)
 public class KafkaConfig {
 
-    private final KafkaProperties properties;
-
     @Bean
     public NewTopic productTopic(@Value("${kafka.topic.product}") String topic) {
         return TopicBuilder
@@ -43,20 +41,20 @@ public class KafkaConfig {
     }
 
     @Bean
-    public SpecificAvroSerde<OrderEvent> orderValuesSerdes() {
+    public SpecificAvroSerde<OrderEvent> orderValuesSerdes(KafkaProperties properties) {
         var serde = new SpecificAvroSerde<OrderEvent>();
         serde.configure(properties.getProperties(), false);
         return serde;
     }
 
     @Bean
-    public SpecificAvroSerde<ProductEvent> productValuesSerdes() {
+    public SpecificAvroSerde<ProductEvent> productValuesSerdes(KafkaProperties properties) {
         var serde = new SpecificAvroSerde<ProductEvent>();
         serde.configure(properties.getProperties(), false);
         return serde;
     }
     @Bean
-    SpecificAvroSerde<ReservationEvent> reservationValuesSerdes() {
+    SpecificAvroSerde<ReservationEvent> reservationValuesSerdes(KafkaProperties properties) {
         var serde = new SpecificAvroSerde<ReservationEvent>();
         serde.configure(properties.getProperties(), false);
         return serde;

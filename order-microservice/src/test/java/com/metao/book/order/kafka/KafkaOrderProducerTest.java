@@ -2,8 +2,7 @@ package com.metao.book.order.kafka;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import com.metao.book.order.application.config.KafkaConfig;
-import com.metao.book.order.application.config.KafkaStreamConfig;
+import com.metao.book.order.application.config.OrderStreamConfig;
 import com.metao.book.order.application.config.SerdsConfig;
 import com.metao.book.order.infrastructure.kafka.KafkaOrderProducer;
 import com.metao.book.shared.Currency;
@@ -25,11 +24,11 @@ import org.springframework.test.context.ActiveProfiles;
 @TestInstance(Lifecycle.PER_CLASS)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ImportAutoConfiguration(classes = {
-        KafkaProductConsumerConfiguration.class,
-        StreamsBuilderFactoryBean.class,
-        KafkaOrderConsumerTestConfig.class,
-        SerdsConfig.class
-}, exclude = { KafkaConfig.class, KafkaStreamConfig.class })
+    KafkaProductConsumerConfiguration.class,
+    StreamsBuilderFactoryBean.class,
+    KafkaOrderConsumerTestConfig.class,
+    SerdsConfig.class
+}, exclude = {OrderStreamConfig.class})
 public class KafkaOrderProducerTest extends SpringBootEmbeddedKafka {
 
     private static final Random RAND = new Random();
