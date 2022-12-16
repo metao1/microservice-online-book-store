@@ -11,4 +11,5 @@ import org.springframework.kafka.annotation.EnableKafkaStreams;
 @ImportAutoConfiguration(value = KafkaConfig.class)
 public class StreamConfig {
 
+
 }

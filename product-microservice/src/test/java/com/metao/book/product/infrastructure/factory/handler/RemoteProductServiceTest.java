@@ -15,7 +15,6 @@ import com.metao.book.shared.ProductEvent;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import lombok.SneakyThrows;
-import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
@@ -27,7 +26,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
 
-@Slf4j
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ImportAutoConfiguration(classes = {KafkaProductConsumerConfiguration.class, KafkaProductConsumerTestConfig.class,
     SerdsConfig.class}, exclude = {KafkaConfig.class})

@@ -72,8 +72,10 @@ public class ProductEntity extends AbstractEntity<ProductId> implements Concurre
     @Enumerated(EnumType.STRING)
     private Currency priceCurrency;
 
+    @Column(name = "available_items")
     private double availableItems;
 
+    @Column(name = "reserved_items")
     private double reservedItems;
 
     @BatchSize(size = 20)

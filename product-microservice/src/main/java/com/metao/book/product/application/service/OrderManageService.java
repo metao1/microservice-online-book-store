@@ -2,6 +2,7 @@ package com.metao.book.product.application.service;
 
 import static com.metao.book.shared.Status.ACCEPT;
 import static com.metao.book.shared.Status.CONFIRM;
+import static com.metao.book.shared.Status.REJECT;
 import static com.metao.book.shared.Status.ROLLBACK;
 
 import com.metao.book.product.application.exception.ProductNotFoundException;
@@ -11,7 +12,6 @@ import com.metao.book.product.domain.ProductRepository;
 import com.metao.book.shared.OrderEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 
@@ -23,26 +23,21 @@ public class OrderManageService {
 
     private static final String SOURCE = "payment";
     private final ProductRepository productRepository;
-    private final KafkaOrderProducer kafkaOrderProducer;
-
-    @Value("${kafka.topic.payment}")
-    private String paymentTopic;
 
     public void reserve(OrderEvent order) {
         final ProductEntity product;
         try {
             product = productRepository.findById(new ProductId(order.getProductId())).orElseThrow(() -> new ProductNotFoundException(""));
             log.info("Found: {}", product);
-            //if (order.getPrice() < product.getPriceValue()) {
-            order.setStatus(ACCEPT);
-            product.setReservedItems(product.getReservedItems() + order.getQuantity());
-            product.setAvailableItems(product.getAvailableItems() - order.getQuantity());
-//            } else {
-//                order.setStatus(REJECT);
-//            }
+            if (order.getPrice() < product.getPriceValue().doubleValue()) {
+                order.setStatus(ACCEPT);
+                product.setReservedItems(product.getReservedItems() + order.getQuantity());
+                product.setAvailableItems(product.getAvailableItems() - order.getQuantity());
+            } else {
+                order.setStatus(REJECT);
+            }
             order.setSource(SOURCE);
             productRepository.save(product);
-            kafkaOrderProducer.send(paymentTopic, order.getOrderId(), order);
             log.info("Sent: {}", order);
         } catch (Exception e) {
             log.error(e.getMessage());

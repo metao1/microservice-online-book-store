@@ -1,12 +1,12 @@
 package com.metao.book.product.infrastructure.factory;
 
-import com.metao.book.product.infrastructure.factory.handler.FileHandler;
 import com.metao.book.product.infrastructure.factory.handler.LogMessageHandler;
+import com.metao.book.product.infrastructure.factory.handler.ProductDatabaseHandler;
 import com.metao.book.product.infrastructure.factory.handler.ProductEventHandler;
 import com.metao.book.product.infrastructure.factory.handler.ProductKafkaHandler;
-import com.metao.book.product.infrastructure.factory.handler.ProductDatabaseHandler;
 import com.metao.book.product.infrastructure.mapper.ProductDtoMapper;
 import com.metao.book.product.infrastructure.util.EventUtil;
+import com.metao.book.shared.application.service.FileHandler;
 import java.io.IOException;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
@@ -33,7 +33,6 @@ public class ProductGenerator {
     private final ProductEventHandler eventHandler;
 
     private final ProductDtoMapper mapper;
-    private final FileHandler fileHandler;
 
     @Value("${product-sample-data-path}") String productsDataPath;
 
@@ -46,7 +45,7 @@ public class ProductGenerator {
 
     public void loadProducts() {
         log.info("importing products data from resources");
-        try (var source = fileHandler.readFromFile(productsDataPath)) {
+        try (var source = FileHandler.readFromFile(getClass(), productsDataPath)) {
             source
                 .map(mapper::convertToDto)
                 .filter(Optional::isPresent)

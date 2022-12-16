@@ -1,12 +1,11 @@
-package com.metao.book.order.application.util;
-
-import lombok.experimental.UtilityClass;
+package com.metao.book.shared.application.service.util;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.stream.Stream;
+import lombok.experimental.UtilityClass;
 
 @UtilityClass
 public class FileUtil {

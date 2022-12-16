@@ -1,4 +1,4 @@
-package com.metao.book.order.utils;
+package com.metao.book.product.infrastructure.util;
 
 import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde;
 import java.util.HashMap;
@@ -31,7 +31,7 @@ public class StreamsUtils {
         streamProps.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, "dummy:1234");
         streamProps.put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.String().getClass().getName());
         streamProps.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG,
-            io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde.class.getName());
+            SpecificAvroSerde.class.getName());
 
         return streamProps;
     }

@@ -2,9 +2,9 @@ package com.metao.book.product.infrastructure.factory.handler;
 
 import com.metao.book.product.application.dto.ProductDTO;
 import com.metao.book.product.domain.event.CreateProductEvent;
-import com.metao.book.product.infrastructure.mapper.ProductMapperInterface;
 import com.metao.book.shared.Currency;
 import com.metao.book.shared.ProductEvent;
+import java.time.Instant;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,7 +17,6 @@ import org.springframework.stereotype.Service;
 public class ProductKafkaHandler implements MessageHandler<CreateProductEvent> {
 
     private final RemoteProductService remoteProductService;
-    private final ProductMapperInterface productMapperInterface;
 
     @Override
     public void onMessage(@NonNull CreateProductEvent event) {
@@ -37,9 +36,10 @@ public class ProductKafkaHandler implements MessageHandler<CreateProductEvent> {
             .setProductId(productDTO.getAsin())
             .setTitle(productDTO.getTitle())
             .setDescription(productDTO.getDescription())
-            .setCurrency(this.mapCurrency(productDTO.getCurrency()))
+            .setCurrency(mapCurrency(productDTO.getCurrency()))
             .setPrice(productDTO.getPrice().doubleValue())
             .setImageUrl(productDTO.getImageUrl())
+            .setCreatedOn(Instant.now().toEpochMilli())
             .build();
     }
 

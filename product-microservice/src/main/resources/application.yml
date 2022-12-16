@@ -7,6 +7,8 @@ kafka:
     payment: "payment"
 
 spring:
+  application:
+    name: product-ms
   kafka:
     # Required connection configs for Kafka producer, consumer, and admin
     bootstrap-servers: ${BOOTSTRAP_SERVERS}
@@ -46,8 +48,9 @@ spring:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: io.confluent.kafka.serializers.KafkaAvroSerializer
     streams:
+      application-id: product-ms
       properties:
-        application.id: stock
+        application.id: product
         bootstrap.servers: ${BOOTSTRAP_SERVERS}
         schema.registry.url: ${SCHEMA_HOST}
         default.key.serde: org.apache.kafka.common.serialization.Serdes$StringSerde
@@ -58,7 +61,6 @@ spring:
         topic.max.message.bytes: 8388608 # 84 MiB
         topology.optimization: all
         state.dir: /tmp/kafka-streams
-      application-id: product
   output.ansi.enabled: ALWAYS
   cloud:
     discovery:

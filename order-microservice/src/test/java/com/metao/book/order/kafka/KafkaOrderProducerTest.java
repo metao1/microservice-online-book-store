@@ -2,18 +2,6 @@ package com.metao.book.order.kafka;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.util.Random;
-import java.util.concurrent.TimeUnit;
-
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
-import org.junit.jupiter.api.TestInstance.Lifecycle;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.kafka.config.StreamsBuilderFactoryBean;
-import org.springframework.test.context.ActiveProfiles;
-
 import com.metao.book.order.application.config.KafkaConfig;
 import com.metao.book.order.application.config.KafkaStreamConfig;
 import com.metao.book.order.application.config.SerdsConfig;
@@ -22,6 +10,16 @@ import com.metao.book.shared.Currency;
 import com.metao.book.shared.OrderEvent;
 import com.metao.book.shared.Status;
 import com.metao.book.shared.test.TestUtils.StreamBuilder;
+import java.util.Random;
+import java.util.concurrent.TimeUnit;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.TestInstance.Lifecycle;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.kafka.config.StreamsBuilderFactoryBean;
+import org.springframework.test.context.ActiveProfiles;
 
 @ActiveProfiles(profiles = "test")
 @TestInstance(Lifecycle.PER_CLASS)
