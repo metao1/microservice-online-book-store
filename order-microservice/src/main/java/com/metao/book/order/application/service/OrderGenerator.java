@@ -9,18 +9,29 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.annotation.PostConstruct;
 
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import com.metao.book.order.application.dto.ProductDTO;
 import com.metao.book.order.infrastructure.kafka.KafkaOrderProducer;
+import com.metao.book.shared.Currency;
 import com.metao.book.shared.OrderEvent;
+import com.metao.book.shared.Status;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
+@ConditionalOnProperty(havingValue = "dev", name = "spring.profiles.active")
 public class OrderGenerator {
+
+        @Value("${kafka.topic.order}")
+        String orderTopic;
+
         private static final String CUSTOMER_ID = "CUSTOMER_ID";
         private final Random random = new Random();
         private final KafkaOrderProducer kafkaProducer;
@@ -29,12 +40,11 @@ public class OrderGenerator {
         private final AtomicInteger atomicInteger = new AtomicInteger(1);
         private List<String> productAsinList = new ArrayList<>();
 
-        @Scheduled(fixedDelay = 10000, initialDelay = 2000)
+        @Scheduled(fixedDelay = 30000, initialDelay = 10000)
         public void commandLineRunner() {
-                var randomOrderEvent = Optional.of(atomicInteger.getAndIncrement());
-                var order = randomOrderEvent.map(s -> OrderEvent
-                                .newBuilder()
-                                .setOrderId(s + "")
+                var randomNumber = atomicInteger.getAndIncrement();
+                var order = OrderEvent.newBuilder()
+                                .setOrderId(randomNumber + "")
                                 .setProductId(productAsinList.get(random.nextInt(productAsinList.size())))
                                 .setCustomerId(CUSTOMER_ID)
                                 .setStatus(Status.NEW)
@@ -42,8 +52,8 @@ public class OrderGenerator {
                                 .setPrice(100)
                                 .setCurrency(Currency.dlr)
                                 .setSource("PAYMENT")
-                                .build());
-                order.ifPresent(order -> kafkaProducer.send(orderTopic, order.getOrderId(), order));
+                                .build();
+                kafkaProducer.send(orderTopic, order.getOrderId(), order);
         }
 
         public void loadProducts() {
