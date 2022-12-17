@@ -1,9 +1,5 @@
 package com.metao.book.order.application.config;
 
-import com.metao.book.shared.OrderEvent;
-import com.metao.book.shared.ProductEvent;
-import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde;
-import lombok.RequiredArgsConstructor;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.common.config.TopicConfig;
 import org.springframework.beans.factory.annotation.Value;
@@ -13,6 +9,12 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.config.TopicBuilder;
 import org.springframework.validation.annotation.Validated;
+
+import com.metao.book.shared.OrderEvent;
+import com.metao.book.shared.ProductEvent;
+
+import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde;
+import lombok.RequiredArgsConstructor;
 
 @Validated
 @Configuration

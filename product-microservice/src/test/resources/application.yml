@@ -1,6 +1,6 @@
 kafka:
   topic:
-    product: product
+    product: "product-topic"
 
 eureka:
   client:

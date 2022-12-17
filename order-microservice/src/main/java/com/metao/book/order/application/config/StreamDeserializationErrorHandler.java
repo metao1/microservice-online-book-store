@@ -1,6 +1,7 @@
 package com.metao.book.order.application.config;
 
 import java.util.Map;
+
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.streams.errors.DeserializationExceptionHandler;
 import org.apache.kafka.streams.processor.ProcessorContext;
@@ -14,8 +15,10 @@ public class StreamDeserializationErrorHandler implements DeserializationExcepti
     /**
      * Inspect a record and the exception received.
      * <p>
-     * Note, that the passed in {@link ProcessorContext} only allows to access metadata like the task ID. However, it
-     * cannot be used to emit records via {@link ProcessorContext#forward(Object, Object)}; calling {@code forward()}
+     * Note, that the passed in {@link ProcessorContext} only allows to access
+     * metadata like the task ID. However, it
+     * cannot be used to emit records via
+     * {@link ProcessorContext#forward(Object, Object)}; calling {@code forward()}
      * (and some other methods) would result in a runtime exception.
      *
      * @param context   processor context
@@ -24,10 +27,9 @@ public class StreamDeserializationErrorHandler implements DeserializationExcepti
      */
     @Override
     public DeserializationHandlerResponse handle(
-        ProcessorContext context,
-        ConsumerRecord<byte[], byte[]> record,
-        Exception exception
-    ) {
+            ProcessorContext context,
+            ConsumerRecord<byte[], byte[]> record,
+            Exception exception) {
         if (errorCounter++ < 25) {
             return DeserializationHandlerResponse.CONTINUE;
         }

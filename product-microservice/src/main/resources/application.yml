@@ -3,8 +3,8 @@ server:
 
 kafka:
   topic:
-    product: "product"
-    payment: "payment"
+    product: "product-topic"
+    payment: "payment-topic"
 
 spring:
   application:
@@ -15,9 +15,9 @@ spring:
     # Required connection configs for Confluent Cloud Schema Registry
     properties:
       stream-properties:
-        application-id: product
+        application-id: product-microservice
         schema.registry.url: ${SCHEMA_HOST}
-        application.id: product
+        application.id: product-ms
         bootstrap.servers: ${BOOTSTRAP_SERVERS}
       bootstrap-servers: ${BOOTSTRAP_SERVERS}
       security.protocol: SASL_SSL
@@ -50,7 +50,7 @@ spring:
     streams:
       application-id: product-ms
       properties:
-        application.id: product
+        application.id: product-ms
         bootstrap.servers: ${BOOTSTRAP_SERVERS}
         schema.registry.url: ${SCHEMA_HOST}
         default.key.serde: org.apache.kafka.common.serialization.Serdes$StringSerde

@@ -1,8 +1,8 @@
 kafka:
   topic:
-    order: order
-    product: product
-    payment: payment
+    order: "order-topic"
+    product: "product-topic"
+    payment: "payment-topic"
 
 eureka:
   client:
