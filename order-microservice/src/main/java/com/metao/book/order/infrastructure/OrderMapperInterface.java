@@ -1,5 +1,7 @@
 package com.metao.book.order.infrastructure;
 
+import java.time.Instant;
+
 import com.metao.book.order.application.dto.OrderDTO;
 import com.metao.book.shared.Currency;
 import com.metao.book.shared.OrderEvent;
@@ -12,6 +14,8 @@ public interface OrderMapperInterface {
                 .setStatus(Status.NEW)
                 .setCurrency(Currency.dlr)
                 .setPrice(dto.getPrice())
+                .setSource("STOCK")
+                .setCreatedOn(Instant.now().toEpochMilli())
                 .setStatus(Status.valueOf(dto.getStatus().toString()))
                 .setQuantity(dto.getQuantity())
                 .setProductId(dto.getProductId())

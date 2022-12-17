@@ -42,7 +42,7 @@ spring:
           credentials:
             source: USER_INFO
             user:
-              info: ${INFO_PASS}
+              info: ${SCHEMA_INFO}
     consumer:
       auto-offset-reset: earliest
       key-deserializer: org.apache.kafka.common.serialization.StringSerializer

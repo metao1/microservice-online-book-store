@@ -9,6 +9,7 @@ import com.metao.book.shared.Currency;
 import com.metao.book.shared.OrderEvent;
 import com.metao.book.shared.Status;
 import com.metao.book.shared.test.TestUtils.StreamBuilder;
+import java.time.Instant;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.Test;
@@ -17,7 +18,6 @@ import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.kafka.config.StreamsBuilderFactoryBean;
 import org.springframework.test.context.ActiveProfiles;
 
 @ActiveProfiles(profiles = "test")
@@ -25,7 +25,6 @@ import org.springframework.test.context.ActiveProfiles;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ImportAutoConfiguration(classes = {
     KafkaProductConsumerConfiguration.class,
-    StreamsBuilderFactoryBean.class,
     KafkaOrderConsumerTestConfig.class,
     SerdsConfig.class
 }, exclude = {OrderStreamConfig.class})
@@ -53,15 +52,16 @@ public class KafkaOrderProducerTest extends SpringBootEmbeddedKafka {
 
     private OrderEvent createOrderFromCustomerId(Integer randomId) {
         return OrderEvent.newBuilder()
-                .setOrderId("order-" + randomId)
-                .setProductId("product - " + randomId)
-                .setCustomerId("customer_id")
-                .setSource("PAYMENT")
-                .setStatus(Status.NEW)
-                .setQuantity(1)
-                .setPrice(RAND.nextInt(100))
-                .setCurrency(Currency.dlr)
-                .build();
+            .setOrderId("order-" + randomId)
+            .setProductId("product - " + randomId)
+            .setCustomerId("customer_id")
+            .setCreatedOn(Instant.now().toEpochMilli())
+            .setSource("PAYMENT")
+            .setStatus(Status.NEW)
+            .setQuantity(1)
+            .setPrice(RAND.nextInt(100))
+            .setCurrency(Currency.dlr)
+            .build();
     }
 
 }

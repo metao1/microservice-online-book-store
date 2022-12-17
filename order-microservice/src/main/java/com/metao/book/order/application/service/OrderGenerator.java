@@ -17,7 +17,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 @Slf4j
@@ -36,7 +35,7 @@ public class OrderGenerator {
         private final AtomicInteger atomicInteger = new AtomicInteger(1);
         private List<String> productAsinList = new ArrayList<>();
 
-        @Scheduled(fixedDelay = 30000, initialDelay = 10000)
+        //@Scheduled(fixedDelay = 30000, initialDelay = 10000)
         public void commandLineRunner() {
                 var randomNumber = atomicInteger.getAndIncrement();
                 var order = OrderEvent.newBuilder()
