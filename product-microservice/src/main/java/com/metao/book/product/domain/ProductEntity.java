@@ -1,19 +1,11 @@
 package com.metao.book.product.domain;
 
-import com.metao.book.product.application.dto.CategoryDTO;
-import com.metao.book.product.application.dto.ProductDTO;
-import com.metao.book.product.domain.category.Category;
-import com.metao.book.product.domain.image.Image;
-import com.metao.book.shared.domain.base.AbstractEntity;
-import com.metao.book.shared.domain.base.ConcurrencySafeDomainObject;
-import com.metao.book.shared.domain.base.DomainObjectId;
-import com.metao.book.shared.domain.financial.Currency;
-import com.metao.book.shared.domain.financial.Money;
 import java.math.BigDecimal;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -26,9 +18,7 @@ import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 import javax.persistence.Version;
 import javax.validation.Valid;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+
 import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
@@ -37,13 +27,27 @@ import org.hibernate.annotations.NaturalIdCache;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.lang.NonNull;
 
+import com.metao.book.product.application.dto.CategoryDTO;
+import com.metao.book.product.application.dto.ProductDTO;
+import com.metao.book.product.domain.category.Category;
+import com.metao.book.product.domain.image.Image;
+import com.metao.book.shared.domain.base.AbstractEntity;
+import com.metao.book.shared.domain.base.ConcurrencySafeDomainObject;
+import com.metao.book.shared.domain.base.DomainObjectId;
+import com.metao.book.shared.domain.financial.Currency;
+import com.metao.book.shared.domain.financial.Money;
+
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 @Entity
 @Getter
 @Setter
 @NoArgsConstructor
 @Table(name = "product")
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-@NaturalIdCache// fetch the entity without hitting the database
+@NaturalIdCache // fetch the entity without hitting the database
 public class ProductEntity extends AbstractEntity<ProductId> implements ConcurrencySafeDomainObject {
 
     @NaturalId
@@ -80,12 +84,8 @@ public class ProductEntity extends AbstractEntity<ProductId> implements Concurre
 
     @BatchSize(size = 20)
     @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinTable(name = "product_category_map",
-        joinColumns =
-            {@JoinColumn(name = "product_id")},
-        inverseJoinColumns = {
-            @JoinColumn(name = "product_category_id")}
-    )
+    @JoinTable(name = "product_category_map", joinColumns = { @JoinColumn(name = "product_id") }, inverseJoinColumns = {
+            @JoinColumn(name = "product_category_id") })
     @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
     private Set<ProductCategoryEntity> categories;
 
@@ -106,21 +106,21 @@ public class ProductEntity extends AbstractEntity<ProductId> implements Concurre
     }
 
     public static ProductDTO toDto(@Valid ProductEntity pr) {
-        return ProductDTO.builder().description(pr.getDescription()).title(pr.getTitle()).asin(pr.getIsin())
-            .currency(pr.getPriceCurrency())
-            .price(pr.getPriceValue())
-            .categories(mapCategoryEntitiesToDTOs(pr.getCategories()))
-            .imageUrl(pr.getImage().url())
-            .build();
+        return ProductDTO.builder().description(pr.getDescription()).title(pr.getTitle()).isin(pr.getIsin())
+                .currency(pr.getPriceCurrency())
+                .price(pr.getPriceValue())
+                .categories(mapCategoryEntitiesToDTOs(pr.getCategories()))
+                .imageUrl(pr.getImage().url())
+                .build();
     }
 
     private static Set<CategoryDTO> mapCategoryEntitiesToDTOs(@NonNull Set<ProductCategoryEntity> source) {
         return source
-            .stream()
-            .map(ProductCategoryEntity::getCategory)
-            .map(Category::category)
-            .map(CategoryDTO::of)
-            .collect(Collectors.toSet());
+                .stream()
+                .map(ProductCategoryEntity::getCategory)
+                .map(Category::category)
+                .map(CategoryDTO::of)
+                .collect(Collectors.toSet());
     }
 
     public void addCategory(@NonNull ProductCategoryEntity category) {

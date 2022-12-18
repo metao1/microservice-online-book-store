@@ -47,6 +47,17 @@ subprojects {
             implementation 'org.springframework.boot:spring-boot-starter-web'
             implementation 'org.springframework.boot:spring-boot-starter-validation'
             implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+            implementation 'org.mapstruct:mapstruct'
+            implementation 'org.mapstruct.extensions.spring:mapstruct-spring-annotations'
+
+            annotationProcessor 'org.mapstruct:mapstruct-processor'
+            annotationProcessor 'org.mapstruct.extensions.spring:mapstruct-spring-extensions'
+            annotationProcessor 'org.projectlombok:lombok'
+            annotationProcessor "org.projectlombok:lombok-mapstruct-binding:0.1.0"
+ 
+            testAnnotationProcessor 'org.projectlombok:lombok'
+            
+            testImplementation 'org.projectlombok:lombok'
         }
     }
 
@@ -87,9 +98,6 @@ subprojects {
             implementation 'org.projectlombok:lombok'
             // https://stackoverflow.com/questions/53326271/spring-nullable-annotation-generates-unknown-enum-constant-warning
             implementation 'com.google.code.findbugs:jsr305:3.0.2'
-
-            testAnnotationProcessor 'org.projectlombok:lombok'
-            testImplementation 'org.projectlombok:lombok'
 
             testImplementation('org.springframework.boot:spring-boot-starter-test')
         }
@@ -145,6 +153,16 @@ subprojects {
             if (details.requested.name == 'avro') {
                 details.useTarget group: 'org.apache.avro', name: 'avro', version: avroVersion
                 details.because "prefer 'avro' version ${avroVersion} over any version of 'avro'"
+            }
+            def mapStructVersion = '1.5.3.Final'
+            if (details.requested.group == 'org.mapstruct') {
+              details.useTarget group: details.requested.group, name: details.requested.name, version: mapStructVersion
+              details.because "prefer 'org.mapstruct' version ${mapStructVersion} over any version of 'org.mapstruct'"
+            }
+            def mapStructSpringVersion = '0.1.0'
+            if (details.requested.group == 'org.mapstruct.extensions.spring') {
+                details.useTarget group: details.requested.group, name: details.requested.name, version: mapStructSpringVersion
+                details.because "prefer 'org.mapstruct.extensions.spring' version ${mapStructSpringVersion} over any version of 'org.mapstruct.extensions.spring'"
             }
         }
     }

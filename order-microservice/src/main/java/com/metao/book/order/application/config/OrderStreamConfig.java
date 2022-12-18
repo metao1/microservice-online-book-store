@@ -1,7 +1,6 @@
 package com.metao.book.order.application.config;
 
 import java.time.Duration;
-import java.util.Objects;
 
 import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.common.serialization.Serdes;
@@ -15,10 +14,8 @@ import org.apache.kafka.streams.kstream.StreamJoined;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.convert.ConversionService;
 import org.springframework.kafka.annotation.EnableKafkaStreams;
 
-import com.metao.book.order.application.dto.OrderDTO;
 import com.metao.book.order.domain.OrderManageService;
 import com.metao.book.shared.OrderEvent;
 
@@ -59,13 +56,11 @@ public class OrderStreamConfig {
     }
 
     @Bean
-    public KTable<String, OrderDTO> productTable(
+    public KTable<String, OrderEvent> productTable(
         StreamsBuilder sb,
-        NewTopic orderTopic,
-        ConversionService conversionService,
+        NewTopic orderTopic,        
         SpecificAvroSerde<OrderEvent> serde
     ) {
-        return sb.table(orderTopic.name(), Consumed.with(Serdes.String(), serde), Materialized.as("ORDERS"))
-            .mapValues(val -> Objects.requireNonNull(conversionService.convert(val, OrderDTO.class)));
+        return sb.table(orderTopic.name(), Consumed.with(Serdes.String(), serde), Materialized.as("ORDERS"));
     }
 }

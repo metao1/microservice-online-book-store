@@ -34,9 +34,7 @@ public class ProductController {
 
     @PostMapping
     public void saveProduct(@Valid @RequestBody ProductDTO productDTO) {
-        Optional.of(productMapper.toEntity(productDTO))
-                .orElseThrow()
-                .ifPresent(productService::saveProduct);
+        productMapper.toEntity(productDTO).ifPresent(productService::saveProduct);
     }
 
     @GetMapping(value = "/details/{asin}")

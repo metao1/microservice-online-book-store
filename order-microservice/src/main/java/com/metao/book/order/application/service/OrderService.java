@@ -6,6 +6,7 @@ import java.util.Optional;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.springframework.stereotype.Service;
 
+import com.metao.book.order.application.dto.OrderDTO;
 import com.metao.book.order.domain.OrderServiceInterface;
 import com.metao.book.order.infrastructure.kafka.KafkaOrderProducer;
 import com.metao.book.order.infrastructure.repository.KafkaOrderService;
@@ -27,8 +28,8 @@ public class OrderService implements OrderServiceInterface {
     }
 
     @Override
-    public Optional<OrderEvent> getOrderByProductId(String productId) {
-        return kafkaOrderService.getOrder(productId);
+    public Optional<OrderDTO> getOrderByOrderId(String orderId) {
+        return kafkaOrderService.getOrder(orderId);
     }
 
     @Override
