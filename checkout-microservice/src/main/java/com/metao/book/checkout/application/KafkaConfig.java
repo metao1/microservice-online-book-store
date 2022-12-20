@@ -1,5 +1,6 @@
 package com.metao.book.checkout.application;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.common.config.TopicConfig;
 import org.springframework.beans.factory.annotation.Value;
@@ -11,8 +12,6 @@ import org.springframework.kafka.annotation.EnableKafka;
 import org.springframework.kafka.config.TopicBuilder;
 import org.springframework.validation.annotation.Validated;
 
-import lombok.RequiredArgsConstructor;
-
 @Validated
 @Configuration
 @EnableKafka
@@ -23,8 +22,8 @@ public class KafkaConfig {
     @Bean
     public NewTopic paymentTopic(@Value("${kafka.topic.payment}") String topic) {
         return TopicBuilder
-                .name(topic)
-                .partitions(3)
+            .name(topic)
+            .partitions(1)
                 .config(TopicConfig.COMPRESSION_TYPE_CONFIG, "zstd")
                 .compact()
                 .build();

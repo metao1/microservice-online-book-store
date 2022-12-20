@@ -55,12 +55,13 @@ public class OrderStreamConfig {
         return paymentOrders;
     }
 
+
     @Bean
     public KTable<String, OrderEvent> productTable(
         StreamsBuilder sb,
-        NewTopic orderTopic,        
+        NewTopic orderProductTopic,
         SpecificAvroSerde<OrderEvent> serde
     ) {
-        return sb.table(orderTopic.name(), Consumed.with(Serdes.String(), serde), Materialized.as("ORDERS"));
+        return sb.table(orderProductTopic.name(), Consumed.with(Serdes.String(), serde), Materialized.as("ORDERS"));
     }
 }

@@ -15,6 +15,7 @@ public class RemoteProductService {
 
     @Value("${kafka.topic.product}")
     private String productEventTopic;
+
     private final KafkaTemplate<String, ProductEvent> kafkaTemplate;
 
     @Transactional

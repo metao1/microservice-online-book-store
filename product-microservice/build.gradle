@@ -14,6 +14,10 @@ dependencies {
     implementation 'io.confluent:kafka-avro-serializer'
     implementation 'io.confluent:kafka-streams-avro-serde'
 
+    implementation 'org.springframework.cloud:spring-cloud-stream'
+    implementation 'org.springframework.cloud:spring-cloud-stream-binder-kafka-streams'
+            
+
     testImplementation 'org.testcontainers:postgresql'
     testImplementation 'org.testcontainers:testcontainers'
     testImplementation 'org.testcontainers:junit-jupiter'

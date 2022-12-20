@@ -51,7 +51,8 @@ public class ProductMapperTest {
     @Test
     public void givenProductEntity_whenConvertToProductDTO_isOk() {
         var pe = ProductTestUtils.createProductEntity();
-        var productDto = ProductEntity.toDto(pe);
+        var productMapper = new ProductMapper();
+        var productDto = productMapper.toDto(pe);
         var categories = pe.getCategories();
 
         productDto.getCategories()

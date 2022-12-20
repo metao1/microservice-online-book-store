@@ -1,14 +1,16 @@
 package com.metao.book.product.application.service;
 
-import com.metao.book.shared.OrderEvent;
-import com.metao.book.shared.ReservationEvent;
-import com.metao.book.shared.Status;
 import javax.transaction.Transactional;
+
 import org.apache.kafka.streams.kstream.ValueJoiner;
 import org.springframework.stereotype.Component;
 
+import com.metao.book.shared.OrderEvent;
+import com.metao.book.shared.ReservationEvent;
+import com.metao.book.shared.Status;
+
 @Component
-public class OrderJoiner implements ValueJoiner<ReservationEvent, OrderEvent, OrderEvent> {
+public class OrderJoiner implements ValueJoiner<OrderEvent, ReservationEvent, OrderEvent> {
 
     /**
      * Return a joined value consisting of {@code value1} and {@code value2}.
@@ -18,7 +20,7 @@ public class OrderJoiner implements ValueJoiner<ReservationEvent, OrderEvent, Or
      * @return the joined value
      */
     @Override
-    public OrderEvent apply(ReservationEvent reservation, OrderEvent order) {
+    public OrderEvent apply( OrderEvent order,ReservationEvent reservation) {
         switch (order.getStatus()) {
             case NEW -> {
                 if (availableInStock(order, reservation)) {
@@ -58,6 +60,6 @@ public class OrderJoiner implements ValueJoiner<ReservationEvent, OrderEvent, Or
     }
 
     private static boolean availableInStock(OrderEvent order, ReservationEvent reservation) {
-        return order.getQuantity() <= reservation.getAvailable();
+        return order.getQuantity() >= reservation.getReserved();
     }
 }

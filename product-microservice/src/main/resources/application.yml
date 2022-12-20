@@ -3,21 +3,26 @@ server:
 
 kafka:
   topic:
+    order: "order-topic"
     product: "product-topic"
-    payment: "payment-topic"
+    reservation: "reservation-topic"
+    order-product: "order-product-topic"
 
 spring:
+  cloud:
+    discovery:
+      enabled: false        
   application:
-    name: product-ms
+    name: product-mist
   kafka:
     # Required connection configs for Kafka producer, consumer, and admin
     bootstrap-servers: ${BOOTSTRAP_SERVERS}
     # Required connection configs for Confluent Cloud Schema Registry
     properties:
       stream-properties:
-        application-id: product-microservice
+        application-id: product-mist
         schema.registry.url: ${SCHEMA_HOST}
-        application.id: product-ms
+        application.id: product-mist
         bootstrap.servers: ${BOOTSTRAP_SERVERS}
       bootstrap-servers: ${BOOTSTRAP_SERVERS}
       security.protocol: SASL_SSL
@@ -39,7 +44,7 @@ spring:
               info: ${INFO_PASS}
     consumer:
       auto-offset-reset: earliest
-      key-deserializer: org.apache.kafka.common.serialization.StringSerializer
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: io.confluent.kafka.serializers.KafkaAvroDeserializer
       properties:
         auto.offset.reset: earliest
@@ -48,9 +53,10 @@ spring:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: io.confluent.kafka.serializers.KafkaAvroSerializer
     streams:
-      application-id: product-ms
+      application-id: product-mist
+      replication-factor: 3
       properties:
-        application.id: product-ms
+        application.id: product-mist
         bootstrap.servers: ${BOOTSTRAP_SERVERS}
         schema.registry.url: ${SCHEMA_HOST}
         default.key.serde: org.apache.kafka.common.serialization.Serdes$StringSerde
@@ -62,9 +68,7 @@ spring:
         topology.optimization: all
         state.dir: /tmp/kafka-streams
   output.ansi.enabled: ALWAYS
-  cloud:
-    discovery:
-      enabled: false
+ 
   datasource:
     url: jdbc:h2:mem:product-app;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
     driverClassName: org.h2.Driver
@@ -89,8 +93,9 @@ spring:
 product-sample-data-path: data/products.txt
 
 logging:
+  pattern.console: "%clr(%d{HH:mm:ss.SSS}){blue} %clr(---){faint} %clr([%15.15t]){yellow} %clr(:){red} %clr(%m){faint}%n"
   level:
+    org.apache.kafka.streams.kstream: INFO
     org.springframework.data: DEBUG
-    org.springframework.boot.autoconfigure: ERROR
-    org.springframework.web.reactive: DEBUG
-    org.hibernate: INFO
+    org.springframework.boot.autoconfigure: ERROR  
+    org.hibernate: DEBUG

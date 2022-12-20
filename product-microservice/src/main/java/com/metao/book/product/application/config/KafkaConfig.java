@@ -1,5 +1,11 @@
 package com.metao.book.product.application.config;
 
+import com.metao.book.shared.OrderEvent;
+import com.metao.book.shared.ProductEvent;
+import com.metao.book.shared.ProductsResponseEvent;
+import com.metao.book.shared.ReservationEvent;
+import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde;
+import lombok.RequiredArgsConstructor;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.common.config.TopicConfig;
 import org.springframework.beans.factory.annotation.Value;
@@ -11,14 +17,6 @@ import org.springframework.kafka.config.TopicBuilder;
 import org.springframework.kafka.core.CleanupConfig;
 import org.springframework.validation.annotation.Validated;
 
-import com.metao.book.shared.OrderEvent;
-import com.metao.book.shared.ProductEvent;
-import com.metao.book.shared.ProductsResponseEvent;
-import com.metao.book.shared.ReservationEvent;
-
-import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde;
-import lombok.RequiredArgsConstructor;
-
 @Validated
 @Configuration
 @RequiredArgsConstructor
@@ -26,10 +24,41 @@ import lombok.RequiredArgsConstructor;
 public class KafkaConfig {
 
     @Bean
+    public NewTopic orderTopic(@Value("${kafka.topic.order}") String topic) {
+        return TopicBuilder
+            .name(topic)
+            .partitions(3)
+            .config(TopicConfig.COMPRESSION_TYPE_CONFIG, "zstd")
+            .compact()
+            .build();
+    }
+
+    @Bean
     public NewTopic productTopic(@Value("${kafka.topic.product}") String topic) {
         return TopicBuilder
             .name(topic)
-            .partitions(1)
+            .partitions(3)
+            .config(TopicConfig.COMPRESSION_TYPE_CONFIG, "zstd")
+            .compact()
+            .build();
+    }
+
+    @Bean
+    public NewTopic reservationTopic(@Value("${kafka.topic.reservation}") String topic) {
+        return TopicBuilder
+            .name(topic)
+            .partitions(3)
+            .config(TopicConfig.COMPRESSION_TYPE_CONFIG, "zstd")
+            .compact()
+            .build();
+    }
+
+
+    @Bean
+    public NewTopic orderProductTopic(@Value("${kafka.topic.order-product}") String topic) {
+        return TopicBuilder
+            .name(topic)
+            .partitions(3)
             .config(TopicConfig.COMPRESSION_TYPE_CONFIG, "zstd")
             .compact()
             .build();
@@ -55,6 +84,7 @@ public class KafkaConfig {
         serde.configure(properties.getProperties(), false);
         return serde;
     }
+
     @Bean
     SpecificAvroSerde<ReservationEvent> reservationValuesSerdes(KafkaProperties properties) {
         var serde = new SpecificAvroSerde<ReservationEvent>();

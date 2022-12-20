@@ -50,8 +50,7 @@ class ProductRepositoryTest extends BasePostgresIntegrationTest {
     void findAllProductsWithOffset_whenOnlyOneItemRequests_isOk() {
         var pe = ProductTestUtils.createProductEntity();
         productRepository.save(pe);
-        Pageable pageable = new OffsetBasedPageRequest(0, 1);
-        var productEntities = productRepository.findByIsin(pe.getIsin());
+        var productEntities = productRepository.findByAsin(pe.getAsin());
         var productEntity = productEntities.get();
         log.error(pe.toString());
         assertThat(productEntity)

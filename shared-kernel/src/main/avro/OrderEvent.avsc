@@ -34,7 +34,7 @@
     },
     {
       "name": "quantity",
-      "type": "int"
+      "type": "double"
     },
     {
       "name": "price",

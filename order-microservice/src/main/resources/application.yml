@@ -11,6 +11,7 @@ kafka:
   topic:
     product: "product-topic"
     order: "order-topic"
+    order-product: "order-product-topic"
     reservation: "reservation-topic"
     payment: "payment-topic"
 
@@ -21,7 +22,7 @@ spring:
     # Required connection configs for Confluent Cloud Schema Registry
     properties:
       stream-properties:
-        application-id: order-microservice
+        application-id: order-mi
         schema.registry.url: ${SCHEMA_HOST}
         application.id: order-microservice
         bootstrap.servers: ${BOOTSTRAP_SERVERS}

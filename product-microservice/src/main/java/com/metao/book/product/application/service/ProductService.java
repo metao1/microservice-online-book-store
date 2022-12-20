@@ -5,6 +5,7 @@ import com.metao.book.product.domain.ProductEntity;
 import com.metao.book.product.domain.ProductId;
 import com.metao.book.product.domain.ProductRepository;
 import com.metao.book.product.domain.ProductServiceInterface;
+import com.metao.book.product.infrastructure.factory.handler.ProductKafkaHandler;
 import com.metao.book.product.infrastructure.repository.model.OffsetBasedPageRequest;
 import java.util.List;
 import java.util.Optional;
@@ -19,6 +20,7 @@ import org.springframework.stereotype.Service;
 public class ProductService implements ProductServiceInterface {
 
     private final ProductRepository productRepository;
+    private final ProductKafkaHandler productKafkaHandler;
 
     @Override
     public Optional<ProductEntity> getProductById(ProductId productId) throws ProductNotFoundException {

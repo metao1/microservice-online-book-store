@@ -1,18 +1,15 @@
 package com.metao.book.product.infrastructure.factory.handler;
 
-import java.time.Instant;
-import java.util.Optional;
-
-import org.springframework.lang.NonNull;
-import org.springframework.stereotype.Service;
-
 import com.metao.book.product.application.dto.ProductDTO;
 import com.metao.book.product.domain.event.CreateProductEvent;
 import com.metao.book.shared.Currency;
 import com.metao.book.shared.ProductEvent;
-
+import java.time.Instant;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.lang.NonNull;
+import org.springframework.stereotype.Service;
 
 @Slf4j
 @Service
@@ -36,14 +33,15 @@ public class ProductKafkaHandler implements MessageHandler<CreateProductEvent> {
 
     ProductEvent mapToProductEvent(ProductDTO productDTO) {
         return ProductEvent.newBuilder()
-                .setProductId(productDTO.getIsin())
-                .setTitle(productDTO.getTitle())
-                .setDescription(productDTO.getDescription())
-                .setCurrency(mapCurrency(productDTO.getCurrency()))
-                .setPrice(productDTO.getPrice().doubleValue())
-                .setImageUrl(productDTO.getImageUrl())
-                .setCreatedOn(Instant.now().toEpochMilli())
-                .build();
+            .setProductId(productDTO.getAsin())
+            .setTitle(productDTO.getTitle())
+            .setImageUrl(productDTO.getImageUrl())
+            .setDescription(productDTO.getDescription())
+            .setCurrency(mapCurrency(productDTO.getCurrency()))
+            .setPrice(productDTO.getPrice().doubleValue())
+            .setVolume(productDTO.getVolume().doubleValue())
+            .setCreatedOn(Instant.now().toEpochMilli())
+            .build();
     }
 
     private Currency mapCurrency(com.metao.book.shared.domain.financial.Currency currency) {

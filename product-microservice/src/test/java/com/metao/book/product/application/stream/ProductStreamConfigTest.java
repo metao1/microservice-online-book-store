@@ -31,7 +31,7 @@ class ProductStreamConfigTest {
     void productReservationStream() {
         final var orderInputTopicName = new NewTopic("order", 1, (short) 1);
         final var productInputTopicName = new NewTopic("product", 1, (short) 1);
-        final var orderStockTopicName = new NewTopic("order-stock-test", 1, (short) 1);
+        final var orderStockTopicName = new NewTopic("order-product-test", 1, (short) 1);
         final var reservationTopicName = new NewTopic("order-reservation-test", 1, (short) 1);
 
         final var streamProps = StreamsUtils.getStreamsProperties();
@@ -62,9 +62,10 @@ class ProductStreamConfigTest {
             .to(reservationTopicName.name());
 
         kafkaStreamsConfig.productOrderStream(
+            orderStockTopicName,
             reservationTable,
             orderStream
-        ).to(orderStockTopicName.name());
+        );
 
         try (final TopologyTestDriver testDriver = new TopologyTestDriver(sb.build(), streamProps)) {
             var orderList = createOrderInput();
@@ -103,8 +104,8 @@ class ProductStreamConfigTest {
                 .satisfies(reservationEvent -> {
                     assertEquals(98, (double) reservationEvent.getAvailable());
                     assertEquals(2, (double) reservationEvent.getReserved());
-                    assertEquals(reservationEvent.getProductId(), PRODUCT_ID);
-                    assertEquals(reservationEvent.getCustomerId(), "CUSTOMER_ID");
+                    assertEquals(PRODUCT_ID, reservationEvent.getProductId());
+                    assertEquals("CUSTOMER_ID", reservationEvent.getCustomerId());
                 })
                 .isNotNull();
 
@@ -113,8 +114,8 @@ class ProductStreamConfigTest {
                 .satisfies(reservationEvent -> {
                     assertEquals(97, (double) reservationEvent.getAvailable());
                     assertEquals(3, (double) reservationEvent.getReserved());
-                    assertEquals(reservationEvent.getProductId(), PRODUCT_ID);
-                    assertEquals(reservationEvent.getCustomerId(), "CUSTOMER_ID");
+                    assertEquals(PRODUCT_ID, reservationEvent.getProductId());
+                    assertEquals("CUSTOMER_ID", reservationEvent.getCustomerId());
                 })
                 .isNotNull();
 
@@ -123,8 +124,8 @@ class ProductStreamConfigTest {
                 .satisfies(reservationEvent -> {
                     assertEquals(99, (double) reservationEvent.getAvailable());
                     assertEquals(1, (double) reservationEvent.getReserved());
-                    assertEquals(reservationEvent.getProductId(), PRODUCT_ID2);
-                    assertEquals(reservationEvent.getCustomerId(), "CUSTOMER_ID");
+                    assertEquals(PRODUCT_ID2, reservationEvent.getProductId());
+                    assertEquals("CUSTOMER_ID", reservationEvent.getCustomerId());
                 })
                 .isNotNull();
 

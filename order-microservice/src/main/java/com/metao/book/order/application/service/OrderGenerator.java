@@ -22,7 +22,7 @@ import org.springframework.stereotype.Service;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-@ConditionalOnProperty(havingValue = "dev", name = "spring.profiles.active")
+//@ConditionalOnProperty(havingValue = "dev", name = "spring.profiles.active")
 public class OrderGenerator {
 
         @Value("${kafka.topic.order}")

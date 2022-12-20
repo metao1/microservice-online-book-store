@@ -18,7 +18,7 @@ spring:
         oneof.for.nullables: false
         write.dates.iso8601: true
     streams:
-      application-id: product-ms-test
+      application-id: product-microservice-test
       properties:
         state.dir: /tmp/kafka-streams-test
     consumer:

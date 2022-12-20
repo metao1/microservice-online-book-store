@@ -11,7 +11,6 @@ import com.metao.book.product.domain.ProductId;
 import com.metao.book.product.domain.ProductRepository;
 import com.metao.book.product.domain.category.Category;
 import com.metao.book.product.infrastructure.mapper.ProductCategoryMapper;
-import com.metao.book.product.util.ProductTestUtils;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -36,7 +35,6 @@ class ProductCategoriesServiceTest {
 
     @Test
     void getProductCategories() {
-        var productCategory = Set.of(ProductTestUtils.createProductCategoryEntity());
         var returnedProductCategories = Optional.of(Set.of(new ProductCategoryEntity(new Category("book"))));
         doReturn(returnedProductCategories)
             .when(productRepository)

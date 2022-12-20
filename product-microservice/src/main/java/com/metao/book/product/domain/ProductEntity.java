@@ -1,11 +1,15 @@
 package com.metao.book.product.domain;
 
+import com.metao.book.product.domain.image.Image;
+import com.metao.book.shared.domain.base.AbstractEntity;
+import com.metao.book.shared.domain.base.ConcurrencySafeDomainObject;
+import com.metao.book.shared.domain.base.DomainObjectId;
+import com.metao.book.shared.domain.financial.Currency;
+import com.metao.book.shared.domain.financial.Money;
 import java.math.BigDecimal;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
-import java.util.stream.Collectors;
-
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -18,7 +22,10 @@ import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 import javax.persistence.Version;
 import javax.validation.Valid;
-
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
@@ -27,35 +34,25 @@ import org.hibernate.annotations.NaturalIdCache;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.lang.NonNull;
 
-import com.metao.book.product.application.dto.CategoryDTO;
-import com.metao.book.product.application.dto.ProductDTO;
-import com.metao.book.product.domain.category.Category;
-import com.metao.book.product.domain.image.Image;
-import com.metao.book.shared.domain.base.AbstractEntity;
-import com.metao.book.shared.domain.base.ConcurrencySafeDomainObject;
-import com.metao.book.shared.domain.base.DomainObjectId;
-import com.metao.book.shared.domain.financial.Currency;
-import com.metao.book.shared.domain.financial.Money;
-
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
 @Entity
 @Getter
 @Setter
+@ToString
 @NoArgsConstructor
 @Table(name = "product")
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 @NaturalIdCache // fetch the entity without hitting the database
 public class ProductEntity extends AbstractEntity<ProductId> implements ConcurrencySafeDomainObject {
 
-    @NaturalId
-    @Column(nullable = false, unique = true)
-    private String isin;
-
     @Version
     Long version;
+
+    @NaturalId
+    @Column(nullable = false, unique = true)
+    private String asin;
+
+    @Column
+    private BigDecimal volume;
 
     @Length(min = 3, max = 255)
     @Column(name = "title", nullable = false)
@@ -76,11 +73,8 @@ public class ProductEntity extends AbstractEntity<ProductId> implements Concurre
     @Enumerated(EnumType.STRING)
     private Currency priceCurrency;
 
-    @Column(name = "available_items")
-    private double availableItems;
-
     @Column(name = "reserved_items")
-    private double reservedItems;
+    private BigDecimal reservedItems;
 
     @BatchSize(size = 20)
     @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
@@ -90,37 +84,22 @@ public class ProductEntity extends AbstractEntity<ProductId> implements Concurre
     private Set<ProductCategoryEntity> categories;
 
     public ProductEntity(
-            @NonNull String asin,
-            @NonNull String title,
-            @NonNull String description,
-            @NonNull Money money,
-            @NonNull Image image) {
+        @NonNull String asin,
+        @NonNull String title,
+        @NonNull String description,
+        @NonNull BigDecimal volume,
+        @NonNull Money money,
+        @NonNull Image image
+    ) {
         super(DomainObjectId.randomId(ProductId.class));
-        this.isin = asin;
+        this.asin = asin;
         this.title = title;
         this.description = description;
+        this.volume = volume;
         this.priceValue = money.doubleAmount();
         this.priceCurrency = money.currency();
         this.image = image;
         this.categories = new HashSet<>();
-    }
-
-    public static ProductDTO toDto(@Valid ProductEntity pr) {
-        return ProductDTO.builder().description(pr.getDescription()).title(pr.getTitle()).isin(pr.getIsin())
-                .currency(pr.getPriceCurrency())
-                .price(pr.getPriceValue())
-                .categories(mapCategoryEntitiesToDTOs(pr.getCategories()))
-                .imageUrl(pr.getImage().url())
-                .build();
-    }
-
-    private static Set<CategoryDTO> mapCategoryEntitiesToDTOs(@NonNull Set<ProductCategoryEntity> source) {
-        return source
-                .stream()
-                .map(ProductCategoryEntity::getCategory)
-                .map(Category::category)
-                .map(CategoryDTO::of)
-                .collect(Collectors.toSet());
     }
 
     public void addCategory(@NonNull ProductCategoryEntity category) {
@@ -145,11 +124,12 @@ public class ProductEntity extends AbstractEntity<ProductId> implements Concurre
             return false;
         }
         ProductEntity that = (ProductEntity) o;
-        return Objects.equals(getIsin(), that.getIsin());
+        return Objects.equals(getAsin(), that.getAsin());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), getIsin());
+        return Objects.hash(super.hashCode(), getAsin());
     }
+
 }
