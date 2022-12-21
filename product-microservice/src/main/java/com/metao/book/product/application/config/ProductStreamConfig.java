@@ -15,7 +15,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.annotation.EnableKafkaStreams;
 
-import com.metao.book.product.application.service.OrderJoiner;
 import com.metao.book.shared.OrderEvent;
 import com.metao.book.shared.ProductEvent;
 import com.metao.book.shared.ReservationEvent;
@@ -33,21 +32,20 @@ import lombok.extern.slf4j.Slf4j;
 public class ProductStreamConfig {
 
         private static final String CUSTOMER_ID = "CUSTOMER_ID";
-        private final OrderJoiner orderJoiner;
 
         @Bean
-        public KStream<String, ReservationEvent> process(
+        public KStream<String, ReservationEvent> reservationStream(
                         StreamsBuilder builder,
                         NewTopic reservationTopic,
                         NewTopic productTopic,
                         NewTopic orderTopic,
-                        SpecificAvroSerde<ProductEvent> productionSerds,
+                        SpecificAvroSerde<ProductEvent> productSerds,
                         SpecificAvroSerde<OrderEvent> orderSerds,
                         SpecificAvroSerde<ReservationEvent> reservationSerds) {
 
                 var orderStream = builder.stream(orderTopic.name(), Consumed.with(Serdes.String(), orderSerds))
                                 .peek((k, order) -> log.info("order:{}", order));
-                var productStream = builder.stream(productTopic.name(), Consumed.with(Serdes.String(), productionSerds))
+                var productStream = builder.stream(productTopic.name(), Consumed.with(Serdes.String(), productSerds))
                                 .peek((k, product) -> log.info("product:{}", product));
 
                 var stream = orderStream
