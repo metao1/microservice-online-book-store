@@ -9,6 +9,7 @@ import org.apache.kafka.streams.kstream.Consumed;
 import org.apache.kafka.streams.kstream.Grouped;
 import org.apache.kafka.streams.kstream.KStream;
 import org.apache.kafka.streams.kstream.Materialized;
+import org.apache.kafka.streams.kstream.Produced;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -31,87 +32,44 @@ import lombok.extern.slf4j.Slf4j;
 @ImportAutoConfiguration(value = KafkaConfig.class)
 public class ProductStreamConfig {
 
-    private static final String CUSTOMER_ID = "CUSTOMER_ID";
-    private final OrderJoiner orderJoiner;
+        private static final String CUSTOMER_ID = "CUSTOMER_ID";
+        private final OrderJoiner orderJoiner;
 
-    private static boolean productIsValid(ProductEvent product) {
-        return product != null && product.getVolume() != null && product.getVolume() > 0;
-    }
+        @Bean
+        public KStream<String, ReservationEvent> process(
+                        StreamsBuilder builder,
+                        NewTopic reservationTopic,
+                        NewTopic productTopic,
+                        NewTopic orderTopic,
+                        SpecificAvroSerde<ProductEvent> productionSerds,
+                        SpecificAvroSerde<OrderEvent> orderSerds,
+                        SpecificAvroSerde<ReservationEvent> reservationSerds) {
 
+                var orderStream = builder.stream(orderTopic.name(), Consumed.with(Serdes.String(), orderSerds))
+                                .peek((k, order) -> log.info("order:{}", order));
+                var productStream = builder.stream(productTopic.name(), Consumed.with(Serdes.String(), productionSerds))
+                                .peek((k, product) -> log.info("product:{}", product));
 
-    // reservationTable
-    // .toStream()
-    // .selectKey((k, v) -> v.getProductId())
-    // .groupByKey(Grouped.with(Serdes.String(), reservationSerds))
-    // .aggregate(() -> 0.0d,
-    // (key, order, total) -> order.getReserved(),
-    // Materialized.with(Serdes.String(), Serdes.Double())
-    // )
-    // .leftJoin(productStream.toTable(),
-    // (value1, value2) -> {
-    // value2.setVolume(value2.getVolume() - value1);
-    // return value2;
-    // }, Materialized.with(Serdes.String(), productSerds)
-    // );
-
-    /*
-     * @Bean
-     * public KStream<String, ProductEvent> productStream(
-     * StreamsBuilder builder,
-     * NewTopic productTopic,
-     * SpecificAvroSerde<ProductEvent> productValuesSerdes
-     * ) {
-     * return builder
-     * .stream(productTopic.name(), Consumed.with(Serdes.String(),
-     * productValuesSerdes));
-     * }
-     */
-
-    @Bean
-    public KStream<String, OrderEvent> orderStream(
-            StreamsBuilder builder,
-            NewTopic orderTopic,
-            SpecificAvroSerde<OrderEvent> orderSerds) {
-        return builder.stream(orderTopic.name(), Consumed.with(Serdes.String(), orderSerds))
-                .peek((k, order) -> log.info("order:{}", order));
-    }
-
-    @Bean
-    public KStream<String, ProductEvent> productStream(
-            StreamsBuilder builder,
-            NewTopic productTopic,
-            SpecificAvroSerde<ProductEvent> productionSerds) {
-        return builder.stream(productTopic.name(), Consumed.with(Serdes.String(), productionSerds))
-                .peek((k, product) -> log.info("product:{}", product));
-    }
-
-    @Bean
-    public KStream<String, ReservationEvent> process(
-            NewTopic reservationTopic,
-            KStream<String, ProductEvent> productStream,
-            KStream<String, OrderEvent> orderStream,
-            SpecificAvroSerde<OrderEvent> orderSerds,
-            SpecificAvroSerde<ReservationEvent> reservationSerds) {
-
-        var stream = orderStream
-                .filter((k, order) -> order.getStatus() == Status.NEW)
-                .selectKey((k, v) -> v.getProductId())
-                .groupByKey(Grouped.with(Serdes.String(), orderSerds))
-                .aggregate(() -> 0.0, (key, order, total) -> total + order.getQuantity(),
-                        Materialized.with(Serdes.String(), Serdes.Double()))
-                .toStream()
-                .peek((k, v) -> log.info("k:{}, v:{}", k, v))
-                .join(productStream.toTable(),
-                        (reserved, product) -> ReservationEvent.newBuilder()
-                                .setCreatedOn(Instant.now().toEpochMilli())
-                                .setProductId(product.getProductId())
-                                .setAvailable((product.getVolume() == null) ? 100 : (product.getVolume() - reserved))
-                                .setReserved(reserved)
-                                .setCustomerId(CUSTOMER_ID)
-                                .build())
-                .peek((k, v) -> log.info("k:{}, v:{}", k, v));       
-        stream.to(reservationTopic.name());
-        return stream;
-    }
+                var stream = orderStream
+                                .filter((k, order) -> order.getStatus() == Status.NEW)
+                                .selectKey((k, v) -> v.getProductId())
+                                .groupByKey(Grouped.with(Serdes.String(), orderSerds))
+                                .aggregate(() -> 0.0, (key, order, total) -> total + order.getQuantity(),
+                                                Materialized.with(Serdes.String(), Serdes.Double()))
+                                .toStream()
+                                .peek((k, v) -> log.info("k:{}, v:{}", k, v))
+                                .join(productStream.toTable(),
+                                                (reserved, product) -> ReservationEvent.newBuilder()
+                                                                .setCreatedOn(Instant.now().toEpochMilli())
+                                                                .setProductId(product.getProductId())
+                                                                .setAvailable((product.getVolume() == null) ? 100
+                                                                                : (product.getVolume() - reserved))
+                                                                .setReserved(reserved)
+                                                                .setCustomerId(CUSTOMER_ID)
+                                                                .build())
+                                .peek((k, v) -> log.info("k:{}, v:{}", k, v));
+                stream.to(reservationTopic.name(), Produced.with(Serdes.String(), reservationSerds));
+                return stream;
+        }
 
 }

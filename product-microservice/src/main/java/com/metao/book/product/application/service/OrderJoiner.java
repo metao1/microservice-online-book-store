@@ -20,7 +20,7 @@ public class OrderJoiner implements ValueJoiner<OrderEvent, ReservationEvent, Or
      * @return the joined value
      */
     @Override
-    public OrderEvent apply( OrderEvent order,ReservationEvent reservation) {
+    public OrderEvent apply(OrderEvent order, ReservationEvent reservation) {
         switch (order.getStatus()) {
             case NEW -> {
                 if (availableInStock(order, reservation)) {
@@ -30,7 +30,7 @@ public class OrderJoiner implements ValueJoiner<OrderEvent, ReservationEvent, Or
                 }
             }
             case CONFIRM -> confirmOrder(order, reservation);
-            case ROLLBACK -> rollbackOrder(order, reservation);
+            case ROLLBACK -> rollbackOrder(order, reservation);            
         }
         return order;
     }
@@ -60,6 +60,6 @@ public class OrderJoiner implements ValueJoiner<OrderEvent, ReservationEvent, Or
     }
 
     private static boolean availableInStock(OrderEvent order, ReservationEvent reservation) {
-        return order.getQuantity() >= reservation.getReserved();
+        return order.getQuantity() <= reservation.getReserved();
     }
 }

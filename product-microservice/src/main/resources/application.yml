@@ -13,16 +13,16 @@ spring:
     discovery:
       enabled: false        
   application:
-    name: product-mist
+    name: product-mister
   kafka:
     # Required connection configs for Kafka producer, consumer, and admin
     bootstrap-servers: ${BOOTSTRAP_SERVERS}
     # Required connection configs for Confluent Cloud Schema Registry
     properties:
       stream-properties:
-        application-id: product-mist
+        application-id: product-mister
         schema.registry.url: ${SCHEMA_HOST}
-        application.id: product-mist
+        application.id: product-mister
         bootstrap.servers: ${BOOTSTRAP_SERVERS}
       bootstrap-servers: ${BOOTSTRAP_SERVERS}
       security.protocol: SASL_SSL
@@ -56,7 +56,7 @@ spring:
       application-id: product-mist
       replication-factor: 3
       properties:
-        application.id: product-mist
+        application.id: product-mister
         bootstrap.servers: ${BOOTSTRAP_SERVERS}
         schema.registry.url: ${SCHEMA_HOST}
         default.key.serde: org.apache.kafka.common.serialization.Serdes$StringSerde
