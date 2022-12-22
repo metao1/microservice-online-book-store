@@ -1,6 +1,5 @@
 package com.metao.book.order.domain;
 
-
 import java.util.List;
 import java.util.Optional;
 
@@ -9,7 +8,7 @@ import com.metao.book.shared.OrderEvent;
 
 public interface OrderServiceInterface {
 
-    void saveOrder(OrderEvent orderEntity);
+    Optional<String> createOrder(OrderDTO orderDTO);
 
     Optional<OrderDTO> getOrderByOrderId(String orderId);
 

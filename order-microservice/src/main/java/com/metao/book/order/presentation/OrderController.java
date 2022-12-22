@@ -1,7 +1,5 @@
 package com.metao.book.order.presentation;
 
-import java.util.Optional;
-
 import javax.validation.Valid;
 
 import org.springframework.http.MediaType;
@@ -15,8 +13,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.metao.book.order.application.dto.OrderDTO;
 import com.metao.book.order.domain.OrderServiceInterface;
-import com.metao.book.order.infrastructure.OrderMapperInterface;
-import com.metao.book.shared.OrderEvent;
 
 import lombok.RequiredArgsConstructor;
 
@@ -26,7 +22,6 @@ import lombok.RequiredArgsConstructor;
 public class OrderController {
 
     private final OrderServiceInterface orderService;
-    private final OrderMapperInterface mapper;
 
     @GetMapping
     public ResponseEntity<OrderDTO> getOrderByOrderId(
@@ -39,19 +34,9 @@ public class OrderController {
 
     @PostMapping
     public ResponseEntity<String> createOrder(@Valid @RequestBody OrderDTO orderDto) {
-        return Optional.of(orderDto)
-                .map(mapper::toAvro)
-                .stream()
-                .<OrderEvent>mapMulti((order, stream) -> {
-                    if (order != null) {
-                        stream.accept(order);
-                    }
-                })
-                .peek(orderService::saveOrder)
-                .map(OrderEvent::getOrderId)
+        return orderService.createOrder(orderDto)
                 .map(ResponseEntity::ok)
-                .findAny()
-                .orElseThrow(() -> new RuntimeException("could not crate order"));
+                .orElseThrow(() -> new RuntimeException("could not create order"));
     }
 
     //

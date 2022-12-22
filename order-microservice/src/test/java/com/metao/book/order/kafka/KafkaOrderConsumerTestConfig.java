@@ -7,7 +7,7 @@ import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.kafka.annotation.EnableKafka;
 import org.springframework.kafka.annotation.KafkaListener;
 
-import com.metao.book.shared.OrderEvent;
+import com.metao.book.order.application.dto.OrderDTO;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -19,7 +19,7 @@ public class KafkaOrderConsumerTestConfig {
     private final CountDownLatch latch = new CountDownLatch(10);
 
     @KafkaListener(id = "order-id", topics = "order", groupId = "order-grp-id")
-    public void onEvent(ConsumerRecord<String, OrderEvent> record) {
+    public void onEvent(ConsumerRecord<String, OrderDTO> record) {
         log.info("Consumed message -> {}", record);
         latch.countDown();
     }

@@ -3,11 +3,11 @@ package com.metao.book.order.application.service;
 import java.util.List;
 import java.util.Optional;
 
-import org.apache.kafka.clients.admin.NewTopic;
 import org.springframework.stereotype.Service;
 
 import com.metao.book.order.application.dto.OrderDTO;
 import com.metao.book.order.domain.OrderServiceInterface;
+import com.metao.book.order.infrastructure.OrderMapperInterface;
 import com.metao.book.order.infrastructure.kafka.KafkaOrderProducer;
 import com.metao.book.order.infrastructure.repository.KafkaOrderService;
 import com.metao.book.shared.OrderEvent;
@@ -20,11 +20,21 @@ public class OrderService implements OrderServiceInterface {
 
     private final KafkaOrderService kafkaOrderService;
     private final KafkaOrderProducer kafkaOrderProducer;
-    private final NewTopic orderTopic;
+    private final OrderMapperInterface mapper;
 
     @Override
-    public void saveOrder(OrderEvent orderEvent) {
-        kafkaOrderProducer.send(orderTopic.name(), orderEvent.getOrderId(), orderEvent);
+    public Optional<String> createOrder(OrderDTO orderDto) {
+        return Optional.of(orderDto)
+                .map(mapper::toAvro)
+                .stream()
+                .<OrderEvent>mapMulti((order, stream) -> {
+                    if (order != null) {
+                        stream.accept(order);
+                    }
+                })
+                .peek(kafkaOrderProducer::produceOrderMessage)
+                .map(OrderEvent::getOrderId)
+                .findAny();
     }
 
     @Override
