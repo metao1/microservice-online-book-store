@@ -2,6 +2,8 @@ package com.metao.book.product.infrastructure.factory.handler;
 
 import com.metao.book.product.application.config.KafkaConfig;
 import com.metao.book.product.application.config.SerdsConfig;
+import com.metao.book.product.application.service.OrderAggregator;
+import com.metao.book.product.application.service.OrderProductJoiner;
 import com.metao.book.product.application.service.ProductService;
 import com.metao.book.product.domain.ProductId;
 import com.metao.book.product.infrastructure.factory.handler.kafka.KafkaProductConsumerConfiguration;
@@ -27,10 +29,12 @@ import static org.mockito.Mockito.when;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ImportAutoConfiguration(classes = {
-    KafkaProductConsumerConfiguration.class,
-    KafkaProductConsumerTestConfig.class,
-    SerdsConfig.class
-}, exclude = {KafkaConfig.class})
+        KafkaProductConsumerConfiguration.class,
+        KafkaProductConsumerTestConfig.class,
+        OrderProductJoiner.class,
+        OrderAggregator.class,
+        SerdsConfig.class
+}, exclude = { KafkaConfig.class })
 @TestInstance(Lifecycle.PER_CLASS)
 @DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
 class RemoteProductServiceTest extends SpringBootEmbeddedKafka {
@@ -50,16 +54,16 @@ class RemoteProductServiceTest extends SpringBootEmbeddedKafka {
     @SneakyThrows
     void handleGetProductEvent() {
         var productEvent = ProductEvent.newBuilder()
-            .setCurrency(Currency.eur)
-            .setPrice(120)
-            .setTitle("TITLE")
-            .setProductId(PRODUCT_ID)
-            .setDescription("DESCRIPTION")
-            .setImageUrl("IMAGE_URL")
-            .build();
+                .setCurrency(Currency.eur)
+                .setPrice(120)
+                .setTitle("TITLE")
+                .setProductId(PRODUCT_ID)
+                .setDescription("DESCRIPTION")
+                .setImageUrl("IMAGE_URL")
+                .build();
         var pe = ProductTestUtils.createProductEntity();
         when(productService.getProductById(new ProductId(PRODUCT_ID)))
-            .thenReturn(Optional.of(pe));
+                .thenReturn(Optional.of(pe));
 
         remoteProductService.handle(productEvent);
 

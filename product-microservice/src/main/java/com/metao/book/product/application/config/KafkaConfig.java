@@ -1,5 +1,6 @@
 package com.metao.book.product.application.config;
 
+import com.metao.book.shared.OrderEvent;
 import org.apache.avro.specific.SpecificRecord;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.common.config.TopicConfig;
@@ -16,7 +17,6 @@ import org.springframework.kafka.config.TopicBuilder;
 import org.springframework.kafka.core.CleanupConfig;
 import org.springframework.validation.annotation.Validated;
 
-import com.metao.book.shared.OrderEvent;
 import com.metao.book.shared.ProductEvent;
 import com.metao.book.shared.ProductsResponseEvent;
 import com.metao.book.shared.ReservationEvent;

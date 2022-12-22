@@ -50,7 +50,18 @@
     },
     {
       "name": "created_on",
-      "type": ["null", "long"],
+      "type": [
+        "null",
+        "long"
+      ],
+      "default": null
+    },
+    {
+      "name": "categories",
+      "type": [
+        "null",
+        "string"
+      ],
       "default": null
     }
   ]

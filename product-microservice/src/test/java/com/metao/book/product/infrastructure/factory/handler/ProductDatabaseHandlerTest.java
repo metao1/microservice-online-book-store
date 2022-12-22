@@ -29,7 +29,7 @@ public class ProductDatabaseHandlerTest {
         var productMsgHandler = new ProductDatabaseHandler(productService, productMapper);
         var product = ProductTestUtils.createProductDTO();
         var entity = productMapper.toEntity(product);
-        var event = EventUtil.createEvent(product);
+        var event = EventUtil.createProductEvent(product);
         productMsgHandler.onMessage(event);
         verify(productRepo).save(argThat(new EventMatcher(entity.orElseThrow())));
     }

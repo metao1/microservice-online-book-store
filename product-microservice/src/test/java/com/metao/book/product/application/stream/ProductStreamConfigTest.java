@@ -7,6 +7,9 @@ import java.time.Instant;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.metao.book.product.application.service.OrderAggregator;
+import com.metao.book.product.application.service.OrderProductJoiner;
+import com.metao.book.shared.OrderEvent;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.StreamsBuilder;
@@ -16,7 +19,6 @@ import org.junit.jupiter.api.Test;
 import com.metao.book.product.application.config.ProductStreamConfig;
 import com.metao.book.product.infrastructure.util.StreamsUtils;
 import com.metao.book.shared.Currency;
-import com.metao.book.shared.OrderEvent;
 import com.metao.book.shared.ProductEvent;
 import com.metao.book.shared.ReservationEvent;
 import com.metao.book.shared.Status;
@@ -27,7 +29,7 @@ import lombok.extern.slf4j.Slf4j;
 class ProductStreamConfigTest {
 
     private static final String PRODUCT_ID = "PRODUCT_ID", PRODUCT_ID2 = "PRODUCT_ID2";
-    ProductStreamConfig kafkaStreamsConfig = new ProductStreamConfig();
+    ProductStreamConfig kafkaStreamsConfig = new ProductStreamConfig(new OrderProductJoiner(), new OrderAggregator());
 
     @Test
     void productReservationStream() {

@@ -10,7 +10,6 @@ import com.metao.book.product.util.BasePostgresIntegrationTest;
 
 import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
 @ActiveProfiles(profiles = "test")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ImportAutoConfiguration(classes = { ProductCategoriesService.class })

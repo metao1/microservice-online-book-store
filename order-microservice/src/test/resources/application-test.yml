@@ -1,10 +1,11 @@
 spring:
   kafka:
     properties:
-      bootstrap-servers: localhost:9092
+      bootstrap-servers: PLAINTEXT://localhost:9092
       schema.registry.url: mock://not-used
       auto.register.schemas: true
       use.latest.version: true
+      security.protocol: PLAINTEXT 
       json:
         fail.invalid.schema: true
         oneof.for.nullables: false

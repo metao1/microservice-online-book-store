@@ -5,6 +5,7 @@ import com.metao.book.order.domain.Currency;
 import com.metao.book.order.domain.Status;
 import java.io.Serializable;
 import java.math.BigDecimal;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -36,4 +37,5 @@ public class OrderDTO implements Serializable {
 
     @JsonProperty("price")
     BigDecimal price;
+
 }

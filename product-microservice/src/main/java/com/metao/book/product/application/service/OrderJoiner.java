@@ -2,10 +2,10 @@ package com.metao.book.product.application.service;
 
 import javax.transaction.Transactional;
 
+import com.metao.book.shared.OrderEvent;
 import org.apache.kafka.streams.kstream.ValueJoiner;
 import org.springframework.stereotype.Component;
 
-import com.metao.book.shared.OrderEvent;
 import com.metao.book.shared.ReservationEvent;
 import com.metao.book.shared.Status;
 

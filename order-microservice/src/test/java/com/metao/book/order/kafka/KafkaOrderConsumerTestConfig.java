@@ -18,7 +18,7 @@ public class KafkaOrderConsumerTestConfig {
 
     private final CountDownLatch latch = new CountDownLatch(10);
 
-    @KafkaListener(id = "order-id", topics = "order", groupId = "order-grp-id")
+    @KafkaListener(id = "order-id", topics = "order-topic", groupId = "order-grp-id")
     public void onEvent(ConsumerRecord<String, OrderDTO> record) {
         log.info("Consumed message -> {}", record);
         latch.countDown();

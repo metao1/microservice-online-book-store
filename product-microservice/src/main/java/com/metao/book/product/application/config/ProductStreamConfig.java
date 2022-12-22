@@ -1,7 +1,6 @@
 package com.metao.book.product.application.config;
 
-import java.time.Instant;
-
+import com.metao.book.shared.OrderEvent;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.StreamsBuilder;
@@ -10,12 +9,14 @@ import org.apache.kafka.streams.kstream.Grouped;
 import org.apache.kafka.streams.kstream.KStream;
 import org.apache.kafka.streams.kstream.Materialized;
 import org.apache.kafka.streams.kstream.Produced;
+import org.apache.kafka.streams.state.Stores;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.annotation.EnableKafkaStreams;
 
-import com.metao.book.shared.OrderEvent;
+import com.metao.book.product.application.service.OrderAggregator;
+import com.metao.book.product.application.service.OrderProductJoiner;
 import com.metao.book.shared.ProductEvent;
 import com.metao.book.shared.ReservationEvent;
 import com.metao.book.shared.Status;
@@ -31,7 +32,10 @@ import lombok.extern.slf4j.Slf4j;
 @ImportAutoConfiguration(value = KafkaConfig.class)
 public class ProductStreamConfig {
 
-        private static final String CUSTOMER_ID = "CUSTOMER_ID";
+        private final static String ORDER_RESERVATION_STORE_NAME = "order-reservation";
+
+        private final OrderProductJoiner orderProductJoiner;
+        private final OrderAggregator orderAggregator;
 
         @Bean
         public KStream<String, ReservationEvent> reservationStream(
@@ -48,23 +52,19 @@ public class ProductStreamConfig {
                 var productStream = builder.stream(productTopic.name(), Consumed.with(Serdes.String(), productSerds))
                                 .peek((k, product) -> log.info("product:{}", product));
 
+                var customerOrderStoreSupplier = Stores.persistentKeyValueStore(ORDER_RESERVATION_STORE_NAME);
+
+                var reservationStateStore = Materialized.<String, Double>as(customerOrderStoreSupplier)
+                                .withKeySerde(Serdes.String())
+                                .withValueSerde(Serdes.Double());
+
                 var stream = orderStream
                                 .filter((k, order) -> order.getStatus() == Status.NEW)
                                 .selectKey((k, v) -> v.getProductId())
                                 .groupByKey(Grouped.with(Serdes.String(), orderSerds))
-                                .aggregate(() -> 0.0, (key, order, total) -> total + order.getQuantity(),
-                                                Materialized.with(Serdes.String(), Serdes.Double()))
+                                .aggregate(() -> 0.0d, orderAggregator, reservationStateStore)
                                 .toStream()
-                                .peek((k, v) -> log.info("k:{}, v:{}", k, v))
-                                .join(productStream.toTable(),
-                                                (reserved, product) -> ReservationEvent.newBuilder()
-                                                                .setCreatedOn(Instant.now().toEpochMilli())
-                                                                .setProductId(product.getProductId())
-                                                                .setAvailable((product.getVolume() == null) ? 100
-                                                                                : (product.getVolume() - reserved))
-                                                                .setReserved(reserved)
-                                                                .setCustomerId(CUSTOMER_ID)
-                                                                .build())
+                                .join(productStream.toTable(), orderProductJoiner)
                                 .peek((k, v) -> log.info("k:{}, v:{}", k, v));
                 stream.to(reservationTopic.name(), Produced.with(Serdes.String(), reservationSerds));
                 return stream;

@@ -33,14 +33,13 @@ public class ProductController {
 
     @PostMapping
     public void saveProduct(@Valid @RequestBody ProductDTO productDTO) {
-        productMapper.toEntity(productDTO).ifPresent(productService::saveProduct);
-        Optional.of(productDTO).map(EventUtil::createEvent).ifPresent(productKafkaHandler::onMessage);
+        Optional.of(productDTO).map(EventUtil::createProductEvent).ifPresent(productKafkaHandler::onMessage);
     }
 
     @GetMapping(value = "/details/{asin}")
     public ResponseEntity<ProductDTO> getOneProduct(@PathVariable ProductId asin) throws ProductNotFoundException {
         return productService.getProductById(asin)
-            .map(productMapper::toDto)
+                .map(productMapper::toDto)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }

@@ -1,7 +1,11 @@
 package com.metao.book.order.application.config;
 
+import com.metao.book.order.domain.OrderManageService;
+import com.metao.book.shared.OrderEvent;
+import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde;
 import java.time.Duration;
-
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.StreamsBuilder;
@@ -16,13 +20,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.annotation.EnableKafkaStreams;
 
-import com.metao.book.order.domain.OrderManageService;
-import com.metao.book.shared.OrderEvent;
-
-import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-
 @Slf4j
 @Configuration
 @EnableKafkaStreams
@@ -35,20 +32,21 @@ public class OrderStreamConfig {
     @Bean
     public KStream<String, OrderEvent> stream(
         StreamsBuilder builder,
-        SpecificAvroSerde<OrderEvent> orderSerde,
+        SpecificAvroSerde<OrderEvent> orderEventSerde,
         NewTopic paymentTopic,
         NewTopic orderTopic,
         NewTopic productTopic
     ) {
         KStream<String, OrderEvent> paymentOrders = builder
-            .stream(paymentTopic.name(), Consumed.with(Serdes.String(), orderSerde));
+            .stream(paymentTopic.name(), Consumed.with(Serdes.String(), orderEventSerde));
         KStream<String, OrderEvent> stockOrderStream = builder
-            .stream(productTopic.name(), Consumed.with(Serdes.String(), orderSerde));
+            .stream(productTopic.name(), Consumed.with(Serdes.String(), orderEventSerde));
         paymentOrders.join(
                 stockOrderStream,
                 orderManageService::confirm,
-                JoinWindows.ofTimeDifferenceWithNoGrace(Duration.ofSeconds(10)),
-                StreamJoined.with(Serdes.String(), orderSerde, orderSerde))
+                JoinWindows.ofTimeDifferenceWithNoGrace(Duration.ofHours(1)),
+                StreamJoined.with(Serdes.String(), orderEventSerde, orderEventSerde)
+            )
             .peek((k, o) -> log.info("Output: {}", o))
             .to(orderTopic.name());
 

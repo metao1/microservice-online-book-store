@@ -7,6 +7,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import com.metao.book.shared.OrderEvent;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.TopologyTestDriver;
@@ -18,7 +19,6 @@ import org.junit.jupiter.api.Test;
 
 import com.metao.book.order.utils.StreamsUtils;
 import com.metao.book.shared.Currency;
-import com.metao.book.shared.OrderEvent;
 import com.metao.book.shared.Status;
 
 import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde;
