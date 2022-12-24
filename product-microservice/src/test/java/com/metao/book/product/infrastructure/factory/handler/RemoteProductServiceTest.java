@@ -1,6 +1,7 @@
 package com.metao.book.product.infrastructure.factory.handler;
 
 import com.metao.book.product.application.config.KafkaConfig;
+import com.metao.book.product.application.config.ProductStreamConfig;
 import com.metao.book.product.application.config.SerdsConfig;
 import com.metao.book.product.application.service.OrderAggregator;
 import com.metao.book.product.application.service.OrderProductJoiner;
@@ -34,7 +35,7 @@ import static org.mockito.Mockito.when;
         OrderProductJoiner.class,
         OrderAggregator.class,
         SerdsConfig.class
-}, exclude = { KafkaConfig.class })
+}, exclude = { ProductStreamConfig.class })
 @TestInstance(Lifecycle.PER_CLASS)
 @DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
 class RemoteProductServiceTest extends SpringBootEmbeddedKafka {
