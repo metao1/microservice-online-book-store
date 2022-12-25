@@ -4,6 +4,8 @@ import com.metao.book.shared.OrderEvent;
 import com.metao.book.shared.ProductEvent;
 import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde;
 import lombok.RequiredArgsConstructor;
+
+import org.apache.avro.specific.SpecificRecord;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.common.config.TopicConfig;
 import org.springframework.beans.factory.annotation.Value;
@@ -22,66 +24,52 @@ public class KafkaConfig {
 
     @Bean
     public NewTopic orderTopic(@Value("${kafka.topic.order}") String topic) {
-        return TopicBuilder
-                .name(topic)
-                .partitions(3)
-                .config(TopicConfig.COMPRESSION_TYPE_CONFIG, "zstd")
-                .compact()
-                .build();
+        return createTopic(topic);        
     }
 
     @Bean
     public NewTopic reservationTopic(@Value("${kafka.topic.reservation}") String topic) {
-        return TopicBuilder
-                .name(topic)
-                .partitions(3)
-                .config(TopicConfig.COMPRESSION_TYPE_CONFIG, "zstd")
-                .compact()
-                .build();
+        return createTopic(topic);
     }
 
     @Bean
     public NewTopic paymentTopic(@Value("${kafka.topic.payment}") String topic) {
-        return TopicBuilder
-            .name(topic)
-            .partitions(3)
-            .config(TopicConfig.COMPRESSION_TYPE_CONFIG, "zstd")
-            .compact()
-            .build();
+        return createTopic(topic);
     }
 
     @Bean
     public NewTopic productTopic(@Value("${kafka.topic.product}") String topic) {
-        return TopicBuilder
-            .name(topic)
-            .partitions(3)
-            .config(TopicConfig.COMPRESSION_TYPE_CONFIG, "zstd")
-            .compact()
-            .build();
+        return createTopic(topic);
     }
 
     @Bean
     public NewTopic orderProductTopic(@Value("${kafka.topic.order-product}") String topic) {
-        return TopicBuilder
-            .name(topic)
-            .partitions(3)
-            .config(TopicConfig.COMPRESSION_TYPE_CONFIG, "zstd")
-            .compact()
-            .build();
+        return createTopic(topic);
     }
 
     @Bean
     SpecificAvroSerde<ProductEvent> productEventSerde(KafkaProperties kafkaProperties) {
-        var result = new SpecificAvroSerde<ProductEvent>();
-        result.configure(kafkaProperties.getProperties(), false);
-        return result;
+        return createAvroSerde(kafkaProperties);
     }
 
     @Bean
     SpecificAvroSerde<OrderEvent> orderEventSerde(KafkaProperties kafkaProperties) {
-        var serde = new SpecificAvroSerde<OrderEvent>();
-        serde.configure(kafkaProperties.getProperties(), false);
-        return serde;
+        return createAvroSerde(kafkaProperties);
+    }
+
+    private <T extends SpecificRecord> SpecificAvroSerde<T> createAvroSerde(KafkaProperties kafkaProperties) {
+        var result = new SpecificAvroSerde<T>();
+        result.configure(kafkaProperties.getProperties(), false);
+        return result;
+    }
+
+    private NewTopic createTopic(String topicName) {
+        return TopicBuilder
+                .name(topicName)
+                .partitions(3)
+                .config(TopicConfig.COMPRESSION_TYPE_CONFIG, "zstd")
+                .compact()
+                .build();
     }
 
 }

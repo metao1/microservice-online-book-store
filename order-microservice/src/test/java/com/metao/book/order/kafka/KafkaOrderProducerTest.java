@@ -17,19 +17,21 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
+import org.springframework.kafka.config.StreamsBuilderFactoryBean;
 import org.springframework.test.context.ActiveProfiles;
 
-@ActiveProfiles(profiles = "test")
-@TestInstance(Lifecycle.PER_CLASS)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@ImportAutoConfiguration(classes = {
+@Import({
         KafkaProductConsumerConfiguration.class,
         KafkaOrderConsumerTestConfig.class,
         SerdsConfig.class,
-        KafkaConfig.class
-}, exclude = { OrderStreamConfig.class })
+        KafkaConfig.class,
+        OrderStreamConfig.class
+})
+@ActiveProfiles(profiles = "test")
+@TestInstance(Lifecycle.PER_CLASS)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class KafkaOrderProducerTest extends SpringBootEmbeddedKafka {
 
     private static final Random RAND = new Random();

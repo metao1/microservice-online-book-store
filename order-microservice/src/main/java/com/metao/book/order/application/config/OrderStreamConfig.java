@@ -23,7 +23,6 @@ import org.springframework.kafka.annotation.EnableKafkaStreams;
 
 @Slf4j
 @Configuration
-@Profile("!test")
 @EnableKafkaStreams
 @RequiredArgsConstructor
 @ImportAutoConfiguration(KafkaConfig.class)
