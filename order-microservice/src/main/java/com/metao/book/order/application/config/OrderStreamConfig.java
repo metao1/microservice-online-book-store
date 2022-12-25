@@ -24,39 +24,41 @@ import org.springframework.kafka.annotation.EnableKafkaStreams;
 @Slf4j
 @Configuration
 @EnableKafkaStreams
+@Profile("!test")
 @RequiredArgsConstructor
 @ImportAutoConfiguration(KafkaConfig.class)
 public class OrderStreamConfig {
 
-    private final OrderManageService orderManageService;
+        private final OrderManageService orderManageService;
 
-    @Bean
-    public KStream<String, OrderEvent> stream(
-            StreamsBuilder builder,
-            SpecificAvroSerde<OrderEvent> orderEventSerde,
-            NewTopic paymentTopic,
-            NewTopic orderTopic,
-            NewTopic productTopic) {
-        KStream<String, OrderEvent> paymentOrders = builder
-                .stream(paymentTopic.name(), Consumed.with(Serdes.String(), orderEventSerde));
-        KStream<String, OrderEvent> stockOrderStream = builder
-                .stream(productTopic.name(), Consumed.with(Serdes.String(), orderEventSerde));
-        paymentOrders.join(
-                stockOrderStream,
-                orderManageService::confirm,
-                JoinWindows.ofTimeDifferenceWithNoGrace(Duration.ofHours(1)),
-                StreamJoined.with(Serdes.String(), orderEventSerde, orderEventSerde))
-                .peek((k, o) -> log.info("Output: {}", o))
-                .to(orderTopic.name());
+        @Bean
+        public KStream<String, OrderEvent> stream(
+                        StreamsBuilder builder,
+                        SpecificAvroSerde<OrderEvent> orderEventSerde,
+                        NewTopic paymentTopic,
+                        NewTopic orderTopic,
+                        NewTopic productTopic) {
+                KStream<String, OrderEvent> paymentOrders = builder
+                                .stream(paymentTopic.name(), Consumed.with(Serdes.String(), orderEventSerde));
+                KStream<String, OrderEvent> stockOrderStream = builder
+                                .stream(productTopic.name(), Consumed.with(Serdes.String(), orderEventSerde));
+                paymentOrders.join(
+                                stockOrderStream,
+                                orderManageService::confirm,
+                                JoinWindows.ofTimeDifferenceWithNoGrace(Duration.ofHours(1)),
+                                StreamJoined.with(Serdes.String(), orderEventSerde, orderEventSerde))
+                                .peek((k, o) -> log.info("Output: {}", o))
+                                .to(orderTopic.name());
 
-        return paymentOrders;
-    }
+                return paymentOrders;
+        }
 
-    @Bean
-    public KTable<String, OrderEvent> productTable(
-            StreamsBuilder sb,
-            NewTopic orderProductTopic,
-            SpecificAvroSerde<OrderEvent> serde) {
-        return sb.table(orderProductTopic.name(), Consumed.with(Serdes.String(), serde), Materialized.as("ORDERS"));
-    }
+        @Bean
+        public KTable<String, OrderEvent> productTable(
+                        StreamsBuilder sb,
+                        NewTopic orderProductTopic,
+                        SpecificAvroSerde<OrderEvent> serde) {
+                return sb.table(orderProductTopic.name(), Consumed.with(Serdes.String(), serde),
+                                Materialized.as("ORDERS"));
+        }
 }

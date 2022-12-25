@@ -27,9 +27,9 @@ public class OrderService implements OrderServiceInterface {
         return Optional.of(orderDto)
                 .map(mapper::toAvro)
                 .stream()
-                .<OrderEvent>mapMulti((order, stream) -> {
+                .<OrderEvent>mapMulti((order, consumer) -> {
                     if (order != null) {
-                        stream.accept(order);
+                        consumer.accept(order);
                     }
                 })
                 .peek(kafkaOrderProducer::produceOrderMessage)

@@ -1,6 +1,7 @@
 package com.metao.book.order.kafka;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.when;
 
 import com.metao.book.order.application.config.KafkaConfig;
 import com.metao.book.order.application.config.OrderStreamConfig;
@@ -22,6 +23,7 @@ import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 
@@ -41,6 +43,9 @@ import org.springframework.test.context.ActiveProfiles;
 public class KafkaOrderProducerTest extends SpringBootEmbeddedKafka {
 
     private static final Random RAND = new Random();
+
+    @MockBean
+    KafkaOrderService orderService;
 
     @Autowired
     private KafkaOrderProducer kafkaProducer;

@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.context.annotation.Import;
@@ -43,41 +44,43 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 @AutoConfigureMockMvc
 @TestInstance(Lifecycle.PER_CLASS)
 @Import({
-        KafkaConfig.class,
-        OrderService.class,
-        KafkaOrderService.class,
-        OrderMapper.class,
-        KafkaProductConsumerConfiguration.class,
-        KafkaOrderConsumerTestConfig.class,
-        SerdsConfig.class
+                KafkaConfig.class,
+                OrderService.class,
+                KafkaOrderService.class,
+                OrderMapper.class,
+                KafkaProductConsumerConfiguration.class,
+                KafkaOrderConsumerTestConfig.class,
+                SerdsConfig.class
 })
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class OrderControllerTest extends SpringBootEmbeddedKafka {
 
-    @Autowired
-    private MockMvc restTemplate;
+        @Autowired
+        private MockMvc restTemplate;
 
-    @LocalServerPort
-    private int port;
+        @MockBean
+        KafkaOrderService orderService;
 
-    @Test
-    public void createOrderIsOk() throws IOException, Exception {
-        // get request for '/order'
-        var order = OrderDTO.builder()
-                .orderId("123")
-                .productId("1234567891")
-                .customerId("CUSTOMER_ID")
-                .status(Status.NEW)
-                .currency(Currency.EUR)
-                .quantity(BigDecimal.valueOf(100))
-                .price(BigDecimal.valueOf(123d))
-                .build();
+        @LocalServerPort
+        private int port;
 
-        this.restTemplate
-                .perform(post("/order")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(TestUtils.convertObjectToJsonBytes(order)))
-                .andExpect(status().isOk());
-    }
+        @Test
+        public void createOrderIsOk() throws IOException, Exception {
+                // get request for '/order'
+                var order = OrderDTO.builder()
+                                .orderId("123")
+                                .productId("1234567891")
+                                .customerId("CUSTOMER_ID")
+                                .status(Status.NEW)
+                                .currency(Currency.EUR)
+                                .quantity(BigDecimal.valueOf(100))
+                                .price(BigDecimal.valueOf(123d))
+                                .build();
+
+                this.restTemplate.perform(post("/order")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(TestUtils.convertObjectToJsonBytes(order)))
+                                .andExpect(status().isOk());
+        }
 
 }
