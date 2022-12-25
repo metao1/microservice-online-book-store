@@ -46,7 +46,7 @@ spring:
               info: ${SCHEMA_INFO}
     consumer:
       auto-offset-reset: earliest
-      key-deserializer: org.apache.kafka.common.serialization.StringSerializer
+      key-deserializer: org.apache.kafka.common.serialization.StringDerializer
       value-deserializer: io.confluent.kafka.serializers.KafkaAvroDeserializer
       properties:
         auto.offset.reset: earliest

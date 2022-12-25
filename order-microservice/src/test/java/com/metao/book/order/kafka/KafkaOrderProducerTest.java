@@ -5,7 +5,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import com.metao.book.order.application.config.KafkaConfig;
 import com.metao.book.order.application.config.OrderStreamConfig;
 import com.metao.book.order.application.config.SerdsConfig;
+import com.metao.book.order.application.service.OrderMapper;
+import com.metao.book.order.application.service.OrderService;
 import com.metao.book.order.infrastructure.kafka.KafkaOrderProducer;
+import com.metao.book.order.infrastructure.repository.KafkaOrderService;
 import com.metao.book.shared.Currency;
 import com.metao.book.shared.OrderEvent;
 import com.metao.book.shared.Status;
@@ -17,20 +20,23 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
-import org.springframework.kafka.config.StreamsBuilderFactoryBean;
 import org.springframework.test.context.ActiveProfiles;
 
+@ActiveProfiles("test")
+@AutoConfigureMockMvc
+@TestInstance(Lifecycle.PER_CLASS)
 @Import({
+        KafkaConfig.class,
+        OrderService.class,
+        KafkaOrderService.class,
+        OrderMapper.class,
         KafkaProductConsumerConfiguration.class,
         KafkaOrderConsumerTestConfig.class,
-        SerdsConfig.class,
-        KafkaConfig.class,
-        OrderStreamConfig.class
+        SerdsConfig.class
 })
-@ActiveProfiles(profiles = "test")
-@TestInstance(Lifecycle.PER_CLASS)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class KafkaOrderProducerTest extends SpringBootEmbeddedKafka {
 
