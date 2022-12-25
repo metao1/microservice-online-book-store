@@ -22,6 +22,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.RequestBuilder;
 
+import com.metao.book.order.application.config.KafkaConfig;
 import com.metao.book.order.application.config.OrderStreamConfig;
 import com.metao.book.order.application.config.SerdsConfig;
 import com.metao.book.order.application.dto.OrderDTO;
@@ -42,6 +43,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 @AutoConfigureMockMvc
 @TestInstance(Lifecycle.PER_CLASS)
 @Import({
+        KafkaConfig.class,
         OrderService.class,
         KafkaOrderService.class,
         OrderMapper.class,
