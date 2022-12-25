@@ -29,7 +29,7 @@ import org.springframework.kafka.annotation.EnableKafkaStreams;
 @Configuration
 @EnableKafkaStreams
 @RequiredArgsConstructor
-@Profile({"!test", "!container"})
+@Profile({"!test"})
 @ImportAutoConfiguration(value = KafkaConfig.class)
 public class ProductStreamConfig {
 

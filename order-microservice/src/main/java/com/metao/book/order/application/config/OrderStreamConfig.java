@@ -19,7 +19,7 @@ import java.time.Duration;
 @Slf4j
 @Configuration
 @EnableKafkaStreams
-@Profile({"!test", "!container"})
+@Profile({"!test"})
 @RequiredArgsConstructor
 @ImportAutoConfiguration(KafkaConfig.class)
 public class OrderStreamConfig {
