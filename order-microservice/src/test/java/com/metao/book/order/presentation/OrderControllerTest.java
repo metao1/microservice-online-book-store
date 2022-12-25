@@ -12,6 +12,7 @@ import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
+import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureDataJpa;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -40,8 +41,13 @@ import com.metao.book.order.utils.TestUtils;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
-@ActiveProfiles("test")
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
+
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace;
+
+@ActiveProfiles({ "test", "container" })
 @AutoConfigureMockMvc
+@AutoConfigureTestDatabase(replace = Replace.NONE)
 @TestInstance(Lifecycle.PER_CLASS)
 @Import({
                 KafkaConfig.class,
@@ -61,11 +67,8 @@ public class OrderControllerTest extends SpringBootEmbeddedKafka {
         @MockBean
         KafkaOrderService orderService;
 
-        @LocalServerPort
-        private int port;
-
         @Test
-        public void createOrderIsOk() throws IOException, Exception {
+        public void createOrderIsOk() throws Exception {
                 // get request for '/order'
                 var order = OrderDTO.builder()
                                 .orderId("123")
