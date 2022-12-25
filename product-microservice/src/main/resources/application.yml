@@ -9,7 +9,7 @@ kafka:
     order-product: "order-product-topic"
 
 spring:
-  cloud:
+  cloud:    
     discovery:
       enabled: false        
   application:

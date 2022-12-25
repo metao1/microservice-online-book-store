@@ -1,7 +1,10 @@
 kafka:
   topic:
+    order: "order-topic"
     product: "product-topic"
-
+    reservation: "reservation-topic"
+    order-product: "order-product-topic"
+    
 spring:
   kafka:
     properties:

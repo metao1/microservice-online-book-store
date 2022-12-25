@@ -4,6 +4,7 @@ import com.metao.book.shared.OrderEvent;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.StreamsBuilder;
+import org.apache.kafka.streams.Topology;
 import org.apache.kafka.streams.kstream.Consumed;
 import org.apache.kafka.streams.kstream.Grouped;
 import org.apache.kafka.streams.kstream.KStream;
@@ -13,6 +14,7 @@ import org.apache.kafka.streams.state.Stores;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.kafka.annotation.EnableKafkaStreams;
 
 import com.metao.book.product.application.service.OrderAggregator;
@@ -27,6 +29,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Configuration
+@Profile("!test")
 @EnableKafkaStreams
 @RequiredArgsConstructor
 @ImportAutoConfiguration(value = KafkaConfig.class)
@@ -68,6 +71,16 @@ public class ProductStreamConfig {
                                 .peek((k, v) -> log.info("k:{}, v:{}", k, v));
                 stream.to(reservationTopic.name(), Produced.with(Serdes.String(), reservationSerds));
                 return stream;
+        }
+
+        @Bean
+        public Topology topology(StreamsBuilder streamsBuilder, SpecificAvroSerde<ProductEvent> productSerde) {
+                streamsBuilder.addStateStore(
+                                Stores.keyValueStoreBuilder(Stores.persistentKeyValueStore("product-state-store"),
+                                                Serdes.String(),
+                                                productSerde));
+                Topology topology = streamsBuilder.build();
+                return topology;
         }
 
 }

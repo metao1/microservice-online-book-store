@@ -98,11 +98,14 @@ class ProductRepositoryTest extends BasePostgresIntegrationTest {
                 .element(0)
                 .isEqualTo(pe)
                 .extracting(ProductEntity::getCategories)
-                .satisfies(categories -> assertThat(categories)
-                        .hasSize(1)
-                        .element(0)
-                        .extracting(ProductCategoryEntity::getCategory)
-                        .extracting(Category::category)
-                        .isEqualTo("book"));
+                .satisfies(categories -> {
+                    assertThat(categories)
+                            .hasSize(1)
+                            .element(0)
+                            .extracting(ProductCategoryEntity::getCategory)
+                            .extracting(Category::category)
+                            .isEqualTo("book");
+                });
+
     }
 }

@@ -4,10 +4,6 @@ import com.metao.book.shared.OrderEvent;
 import org.apache.avro.specific.SpecificRecord;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.common.config.TopicConfig;
-import org.apache.kafka.common.serialization.Serdes;
-import org.apache.kafka.streams.StreamsBuilder;
-import org.apache.kafka.streams.Topology;
-import org.apache.kafka.streams.state.Stores;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.kafka.KafkaProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -68,15 +64,6 @@ public class KafkaConfig {
     @Bean
     SpecificAvroSerde<ReservationEvent> reservationValuesSerdes(KafkaProperties kafkaProperties) {
         return createAvroSerde(kafkaProperties);
-    }
-
-    @Bean
-    public Topology topology(StreamsBuilder streamsBuilder, SpecificAvroSerde<ProductEvent> productSerde) {
-        streamsBuilder.addStateStore(
-                Stores.keyValueStoreBuilder(Stores.persistentKeyValueStore("product-state-store"), Serdes.String(),
-                        productSerde));
-        Topology topology = streamsBuilder.build();
-        return topology;
     }
 
     private <T extends SpecificRecord> SpecificAvroSerde<T> createAvroSerde(KafkaProperties kafkaProperties) {

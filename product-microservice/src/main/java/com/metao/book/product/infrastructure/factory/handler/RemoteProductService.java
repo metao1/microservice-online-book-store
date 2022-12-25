@@ -14,7 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class RemoteProductService {
 
     @Value("${kafka.topic.product}")
-    private String productEventTopic;
+    String productEventTopic;
 
     private final KafkaTemplate<String, ProductEvent> kafkaTemplate;
 
