@@ -22,5 +22,6 @@ class ProductCategoriesServiceIntegrationTest extends BasePostgresIntegrationTes
     @Test
     void getProductCategories() {
         // categoriesService.getProductCategories(new ProductId("id"));
+        // categoriesService.getProductCategories(new ProductId("id"));
     }
 }

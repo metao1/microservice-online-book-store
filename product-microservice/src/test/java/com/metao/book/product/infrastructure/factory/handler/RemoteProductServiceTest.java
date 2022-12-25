@@ -1,6 +1,8 @@
 package com.metao.book.product.infrastructure.factory.handler;
 
-import com.metao.book.product.application.config.SerdsConfig;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.when;
+
 import com.metao.book.product.application.service.ProductService;
 import com.metao.book.product.domain.ProductId;
 import com.metao.book.product.infrastructure.factory.handler.kafka.KafkaProductConsumerConfiguration;
@@ -8,27 +10,21 @@ import com.metao.book.product.infrastructure.factory.handler.kafka.KafkaProductC
 import com.metao.book.product.util.ProductTestUtils;
 import com.metao.book.shared.Currency;
 import com.metao.book.shared.ProductEvent;
+import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureDataJpa;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
-import java.util.Optional;
-import java.util.concurrent.TimeUnit;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.when;
+import org.springframework.test.context.ActiveProfiles;
 
 @ActiveProfiles({ "test", "container" })
 @Import({

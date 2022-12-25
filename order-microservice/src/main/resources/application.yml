@@ -45,7 +45,6 @@ spring:
             user:
               info: ${SCHEMA_INFO}
     consumer:
-      auto-offset-reset: earliest
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: io.confluent.kafka.serializers.KafkaAvroDeserializer
       properties:
@@ -97,5 +96,5 @@ logging:
   level:
     org.apache.kafka.streams.kstream: INFO
     org.springframework.data: DEBUG
-    org.springframework.boot.autoconfigure: ERROR  
+    org.springframework.boot.autoconfigure: ERROR
     org.hibernate: DEBUG

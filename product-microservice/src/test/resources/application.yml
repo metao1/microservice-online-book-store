@@ -4,9 +4,10 @@ kafka:
     product: "product-topic"
     reservation: "reservation-topic"
     order-product: "order-product-topic"
-    
+
 spring:
   kafka:
+    bootstrap-servers: localhost:9092
     properties:
       bootstrap-servers: localhost:9092
       schema.registry.url: mock://not-used

@@ -1,5 +1,10 @@
+kafka:
+  topic:
+    order: "order-topic"
+
 spring:
   kafka:
+    bootstrap-servers: PLAINTEXT://localhost:9092
     properties:
       bootstrap-servers: PLAINTEXT://localhost:9092
       schema.registry.url: mock://not-used
@@ -28,5 +33,4 @@ spring:
           json:
             add:
               type:
-                headers: false
-    bootstrap-servers: localhost:9092
+                headers: false 

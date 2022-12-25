@@ -15,7 +15,6 @@ import com.metao.book.product.util.BasePostgresIntegrationTest;
 import com.metao.book.product.util.ProductTestUtils;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
-
 import org.assertj.core.api.Condition;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +31,7 @@ import org.springframework.test.context.ActiveProfiles;
 @DataJpaTest
 @DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
 @AutoConfigureTestDatabase(replace = Replace.NONE)
-class ProductRepositoryTest extends BasePostgresIntegrationTest {
+public class ProductRepositoryTest extends BasePostgresIntegrationTest {
 
     @Autowired
     ProductRepository productRepository;

@@ -3,7 +3,6 @@ server:
 
 kafka:
   topic:
-    order: "order"
     payment: "payment"
 
 spring:
@@ -50,8 +49,8 @@ spring:
     streams:
       properties:
         application.id: checkout
-        bootstrap.servers: pkc-6ojv2.us-west4.gcp.confluent.cloud:9092
-        schema.registry.url: http://pkc-6ojv2.us-west4.gcp.confluent.cloud:8081
+        bootstrap.servers: ${BOOTSTRAP_SERVERS}
+        schema.registry.url: ${SCHEMA_HOST}
         default.key.serde: org.apache.kafka.common.serialization.Serdes$LongSerde
         default.value.serde: io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde
         num.standby.replicas: 1

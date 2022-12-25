@@ -67,15 +67,15 @@ subprojects {
 
     configurations.all {
         test {
-            useJUnitPlatform()
+          useJUnitPlatform()
 
-            doFirst {
-                systemProperty 'spring.profiles.active', 'test'
-            }
+          doFirst {
+            systemProperty 'spring.profiles.active', 'test'
+          }
 
-            testLogging {
-                events "PASSED", "SKIPPED", "FAILED"
-            }
+          // testLogging {
+          //     events "PASSED", "SKIPPED", "FAILED"
+          // }
         }
         exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
         exclude group: 'org.slf4j', module: 'slf4j-simple'
