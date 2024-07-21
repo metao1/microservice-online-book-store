@@ -1,6 +1,6 @@
 package com.metao.book.order.domain;
 
-import com.metao.book.order.application.dto.OrderCreatedEvent;
+import com.metao.book.OrderCreatedEventOuterClass.OrderCreatedEvent;
 import com.metao.book.shared.application.service.Validator;
 import com.metao.book.shared.domain.order.OrderStatus;
 import java.util.Arrays;
@@ -15,6 +15,6 @@ public class OrderEventValidator implements Validator<OrderCreatedEvent> {
         Arrays.stream(OrderStatus.values())
             .findAny()
             .orElseThrow(() -> new RuntimeException("provided status can't be found"));
-        Objects.requireNonNull(order.currency(), "currency can't be null");
+        Objects.requireNonNull(order.getCurrency(), "currency can't be null");
     }
 }

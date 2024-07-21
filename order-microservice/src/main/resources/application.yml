@@ -6,9 +6,14 @@ server:
 
 kafka:
   topic:
-    id: "book-order-id"
-    name: "book-order"
-    group-id: "book-order-group"
+    order-created:
+      id: "order-created-id"
+      name: "order-created"
+      group-id: "order-created-group"
+    order-payment:
+      id: "order-payment-id"
+      name: "order-payment"
+      group-id: "order-payment-group"
 
 spring:
   application:
@@ -17,24 +22,22 @@ spring:
     bootstrap-servers: ${BOOTSTRAP_SERVERS}
     # Required connection configs for Confluent Cloud Schema Registry
     properties:
+      schema.registry.url: http://localhost:8081
       security.protocol: PLAINTEXT
       sasl.mechanism: PLAIN
     consumer:
-      key-deserializer: org.springframework.kafka.support.serializer.ErrorHandlingDeserializer
-      value-deserializer: org.springframework.kafka.support.serializer.ErrorHandlingDeserializer
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: io.confluent.kafka.serializers.protobuf.KafkaProtobufDeserializer
       isolation-level: read_committed
       auto-offset-reset: none
       enable-auto-commit: false
       properties:
+        specific.protobuf.value.type: com.metao.book.order.OrderPaymentEvent
         auto.offset.reset: earliest
-        specific.protobuf.key.type: java.lang.String
-        specific.protobuf.value.type: io.confluent.kafka.serializers.protobuf.KafkaProtobufDeserializer
-        spring.deserializer.key.delegate.class: org.apache.kafka.common.serialization.StringDeserializer
-        spring.deserializer.value.delegate.class: org.apache.kafka.common.serialization.StringDeserializer
         allow.auto.create.topics: 'false'
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
-      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      value-serializer: io.confluent.kafka.serializers.protobuf.KafkaProtobufSerializer
       properties:
         enable.idempotence: true
   output.ansi.enabled: ALWAYS
@@ -66,7 +69,7 @@ spring:
           use_jdbc_metadata_defaults: false
 
 logging:
-  pattern.console: "%clr(%d{HH:mm:ss.SSS}){blue} %clr(---){faint} %clr([%15.15t]){yellow} %clr(:){red} %clr(%m){faint}%n"
+  pattern.console: "%clr(%d{HH:mm:ss.SSS}){blue} %clr(---){faint} %clr([%20.20t]){yellow} %clr(:){red} %clr(%m){faint}%n"
   level:
     org.springframework.data: INFO
     org.springframework.boot.autoconfigure: ERROR
