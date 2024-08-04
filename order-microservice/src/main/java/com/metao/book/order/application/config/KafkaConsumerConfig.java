@@ -48,6 +48,8 @@ public class KafkaConsumerConfig {
     public ConcurrentKafkaListenerContainerFactory<String, OrderPaymentEvent> orderPaymentEventKafkaListenerContainerFactory() {
         ConcurrentKafkaListenerContainerFactory<String, OrderPaymentEvent> factory = new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(orderPaymentEventConsumerFactory());
+        factory.setConcurrency(3);
+        factory.getContainerProperties().setPollTimeout(3000);
         return factory;
     }
 
@@ -71,6 +73,10 @@ public class KafkaConsumerConfig {
     public ConcurrentKafkaListenerContainerFactory<String, OrderCreatedEvent> orderCreatedEventKafkaListenerContainerFactory() {
         ConcurrentKafkaListenerContainerFactory<String, OrderCreatedEvent> factory = new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(orderCreatedEventConsumerFactory());
+
+        factory.setConcurrency(3);
+        factory.getContainerProperties().setPollTimeout(3000);
+
         return factory;
     }
 

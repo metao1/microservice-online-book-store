@@ -17,12 +17,13 @@ spring:
     consumer:
       key-deserializer: org.springframework.kafka.support.serializer.ErrorHandlingDeserializer
       value-deserializer: org.springframework.kafka.support.serializer.ErrorHandlingDeserializer
-      #key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-      #value-deserializer: io.confluent.kafka.serializers.protobuf.KafkaProtobufDeserializer
       isolation-level: read_committed
       auto-offset-reset: none
       enable-auto-commit: false
       properties:
+        session.timeout.ms: 30000
+        max.poll.interval.ms: 300
+        heartbeat.interval.ms: 1000
         auto.offset.reset: earliest
         allow.auto.create.topics: 'false'
         spring.deserializer.key.delegate.class: org.apache.kafka.common.serialization.StringDeserializer
@@ -36,7 +37,7 @@ spring:
   datasource:
     url: ${DATABASE_URL}
     username: ${DATABASE_USER}
-    password: ${DATABASE_PASSWORD}$
+    password: ${DATABASE_PASSWORD}
     hikari:
       auto-commit: false
   flyway:
@@ -48,10 +49,9 @@ spring:
     clean-disabled: true
   jpa:
     database: POSTGRESQL
-    show-sql: true
     generate-ddl: false
     hibernate:
-      ddl-auto: none
+      ddl-auto: validate
     properties:
       open-in-view: false
       hibernate:
@@ -72,7 +72,7 @@ kafka:
       group-id: "order-payment-group"
 
 logging:
-  pattern.console: "%clr(%d{HH:mm:ss.SSS}){blue} %clr(---){faint} %clr([%20.20t]){yellow} %clr(:){red} %clr(%m){faint}%n"
+  pattern.console: "%clr(%d{HH:mm:ss.SSS}){blue} %clr(---){faint} %clr([%20.1t]){yellow} %clr(:){red} %clr(%m){faint}%n"
   level:
     org.springframework.data: INFO
     org.springframework.boot.autoconfigure: ERROR

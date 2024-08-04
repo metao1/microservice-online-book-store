@@ -1,12 +1,8 @@
 spring:
-  kafka:
-    bootstrap-servers: PLAINTEXT://localhost:9092
-    # Required connection configs for Confluent Cloud Schema Registry
-    properties:
-      schema.registry.url: http://localhost:8081
-      security.protocol: PLAINTEXT
-      sasl.mechanism: PLAIN
   datasource:
     url: jdbc:postgresql://localhost:5432/bookstore
     username: bookstore
     password: bookstore
+  jpa:
+    show-sql: true
+    generate-ddl: true

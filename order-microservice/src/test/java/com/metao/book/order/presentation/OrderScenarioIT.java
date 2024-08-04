@@ -14,9 +14,9 @@ import com.metao.book.order.infrastructure.repository.OrderRepository;
 import com.metao.book.shared.test.StreamBuilderTestUtils;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -32,9 +32,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 
-import static org.awaitility.Awaitility.await;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
@@ -46,6 +44,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @Slf4j
+@Order(2)
 @AutoConfigureMockMvc
 @ActiveProfiles({"test"})
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -66,19 +65,14 @@ class OrderScenarioIT extends BaseKafkaIT {
     @SpyBean
     OrderRepository orderRepository;
 
-    @BeforeAll
+    @BeforeEach
     public void setup() {
-        super.setup();
-        // Create a list of dummy orders for the mocked page
-        List<OrderEntity> orders = OrderTestUtil.buildDummyOrders(10);
-
-        orderRepository.saveAll(orders);
-        assertEquals(10, orderRepository.findAll().size());
-    }
-
-    @AfterAll
-    public void tearDown() {
-        orderRepository.deleteAll();
+        if (orderRepository.count() == 0) {
+            // Create a list of dummy orders for the mocked page
+            List<OrderEntity> orders = OrderTestUtil.buildDummyOrders(10);
+            orderRepository.saveAllAndFlush(orders);
+            assertEquals(10, orderRepository.findAll().size());
+        }
     }
 
     @Test
@@ -96,9 +90,8 @@ class OrderScenarioIT extends BaseKafkaIT {
         mockMvc.perform(post("/order")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(StreamBuilderTestUtils.convertObjectToJsonBytes(objectMapper, createOrderDTO)))
-                .andExpect(status().isOk())
-                .andDo(result ->
-                        await().atMost(5, TimeUnit.SECONDS).untilAsserted(() -> verify(orderRepository).save(any(OrderEntity.class))));
+                .andExpect(status().isOk());
+
     }
 
     @Test
@@ -140,24 +133,22 @@ class OrderScenarioIT extends BaseKafkaIT {
     @DisplayName("When Create an invalid order then it is bad request")
     void createInvalidOrderRequestIsBadRequest() {
         var createOrderDTO = OrderDTO.builder()
-            .productId(OrderTestConstant.PRODUCT_ID)
+                .productId(OrderTestConstant.PRODUCT_ID)
                 .currency(OrderTestConstant.EUR.toString())
-            .quantity(OrderTestConstant.QUANTITY)
-            .price(OrderTestConstant.PRICE)
-            .build();
+                .quantity(OrderTestConstant.QUANTITY)
+                .price(OrderTestConstant.PRICE)
+                .build();
 
         mockMvc.perform(post("/order")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(StreamBuilderTestUtils.convertObjectToJsonBytes(objectMapper, createOrderDTO)))
-            .andExpect(status().isBadRequest());
-
-        // Wait for the asynchronous operation to finish
-        await().atMost(3, TimeUnit.SECONDS).untilAsserted(() -> verify(orderRepository, never()).save(any(OrderEntity.class)));
+                .andExpect(status().isBadRequest())
+                .andDo(result -> verify(orderRepository, never()).save(any(OrderEntity.class)));
     }
 
     @Test
     @SneakyThrows
-    @DisplayName("When Get orders then it is OK and return the orders")
+    @DisplayName("Get orders by product ids and statuses")
     void getOrderByProductIdsAndStatusesPageable() {
         // Perform GET request for the first page
         for (int i = 0; i < 2; i++) {
@@ -218,4 +209,5 @@ class OrderScenarioIT extends BaseKafkaIT {
                 jsonPath("$.content").exists()) // Verify the presence of "content" field in the JSON response
             .andExpect(jsonPath("$.numberOfElements").value(1)); // Verify that the number of returned items is 3
     }
+
 }

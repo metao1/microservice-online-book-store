@@ -19,11 +19,11 @@ import java.time.LocalDateTime;
 import java.util.Currency;
 import java.util.Objects;
 
-@Entity
 @Getter
 @Setter
 @ToString
 @NoArgsConstructor
+@Entity(name = "order")
 @Table(name = "order_table")
 public class OrderEntity extends AbstractEntity<OrderId> {
 

@@ -8,13 +8,13 @@ spring:
       sasl.mechanism: PLAIN
       schema.registry.url: mock://not-used
   jpa:
-    properties:
-      hibernate:
-        format_sql: true
-    show-sql: on
-    open-in-view: false
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: create
+      format_sql: true
+    show-sql: on
+    generate-ddl: true
+  flyway:
+    enabled: false
 
 logging:
   pattern.console: "%clr(%d{HH:mm:ss.SSS}){blue} %clr(---){faint} %clr([%15.15t]){yellow} %clr(:){red} %clr(%m){faint}%n"

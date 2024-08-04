@@ -29,6 +29,9 @@ subprojects {
     print(gradle.springBootProjects.contains(it.path))
     apply plugin: "org.springframework.boot"
     apply plugin: "com.google.protobuf"
+    print(gradle.springBootProjects.contains(it.path))
+    apply plugin: 'org.springframework.boot'
+    apply plugin: 'com.google.protobuf'
     dependencies {
       implementation("org.springframework.boot:spring-boot-starter-web") {
         exclude group: "org.springframework.boot", module: "spring-boot-starter-logging"
@@ -74,5 +77,9 @@ subprojects {
       }
     }
   }
-
+    java {
+        toolchain {
+            languageVersion = JavaLanguageVersion.of(21)
+        }
+    }
 }
