@@ -5,27 +5,28 @@ server:
   port: ${PORT:8080}
 
 spring:
-  active:
-    profile: local
   application:
     name: order-microservice
   kafka:
-    bootstrap-servers: PLAINTEXT://localhost:9092
+    bootstrap-servers: ${BOOTSTRAP_SERVERS}
     # Required connection configs for Confluent Cloud Schema Registry
     properties:
-      schema.registry.url: http://localhost:8081
-      security.protocol: PLAINTEXT
-      sasl.mechanism: PLAIN
+      schema.registry.url: ${SCHEMA_REGISTRY_URL}
+      security.protocol: ${SECURITY_PROTOCOL}
+      sasl.mechanism: ${SASL_MECHANISM}
     consumer:
-      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-      value-deserializer: io.confluent.kafka.serializers.protobuf.KafkaProtobufDeserializer
+      key-deserializer: org.springframework.kafka.support.serializer.ErrorHandlingDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.ErrorHandlingDeserializer
+      #key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      #value-deserializer: io.confluent.kafka.serializers.protobuf.KafkaProtobufDeserializer
       isolation-level: read_committed
       auto-offset-reset: none
       enable-auto-commit: false
       properties:
-        specific.protobuf.value.type: com.metao.book.order.OrderPaymentEvent
         auto.offset.reset: earliest
         allow.auto.create.topics: 'false'
+        spring.deserializer.key.delegate.class: org.apache.kafka.common.serialization.StringDeserializer
+        spring.deserializer.value.delegate.class: io.confluent.kafka.serializers.protobuf.KafkaProtobufDeserializer
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: io.confluent.kafka.serializers.protobuf.KafkaProtobufSerializer
@@ -33,9 +34,9 @@ spring:
         enable.idempotence: true
   output.ansi.enabled: ALWAYS
   datasource:
-    url: jdbc:postgresql://localhost:5432/bookstore
-    username: bookstore
-    password: bookstore
+    url: ${DATABASE_URL}
+    username: ${DATABASE_USER}
+    password: ${DATABASE_PASSWORD}$
     hikari:
       auto-commit: false
   flyway:

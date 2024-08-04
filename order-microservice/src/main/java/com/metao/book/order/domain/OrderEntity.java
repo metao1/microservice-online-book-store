@@ -3,21 +3,21 @@ package com.metao.book.order.domain;
 import com.metao.book.shared.domain.base.AbstractEntity;
 import com.metao.book.shared.domain.base.DomainObjectId;
 import com.metao.book.shared.domain.financial.Money;
-import com.metao.book.shared.domain.order.OrderStatus;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.Table;
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.util.Currency;
-import java.util.Objects;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.proxy.HibernateProxy;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.Currency;
+import java.util.Objects;
 
 @Entity
 @Getter

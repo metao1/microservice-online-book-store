@@ -20,8 +20,10 @@ public class BaseKafkaIT {
 
     @BeforeAll
     public void setup() {
-        kafkaContainer.start();
-        kafkaContainer.waitingFor(Wait.forLogMessage(".*Kafka server started.*", 1));
+        if (!kafkaContainer.isRunning()) {
+            kafkaContainer.start();
+            kafkaContainer.waitingFor(Wait.forLogMessage(".*Kafka server started.*", 1));
+        }
     }
 
     @DynamicPropertySource

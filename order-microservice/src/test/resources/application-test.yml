@@ -2,6 +2,11 @@ spring:
   datasource:
     url: jdbc:tc:postgresql:11.1:///integration-tests-db
     driver-class-name: org.testcontainers.jdbc.ContainerDatabaseDriver
+  kafka:
+    properties:
+      security.protocol: PLAINTEXT
+      sasl.mechanism: PLAIN
+      schema.registry.url: mock://not-used
   jpa:
     properties:
       hibernate:
@@ -10,14 +15,6 @@ spring:
     open-in-view: false
     hibernate:
       ddl-auto: create-drop
-  kafka:
-    bootstrap-servers: "localhost:9092"
-    properties:
-      bootstrap-servers: "localhost:9092"
-      schema.registry.url: "mock://testUrl"
-    admin:
-      properties:
-        min-in-sync-replicas: 1
 
 logging:
   pattern.console: "%clr(%d{HH:mm:ss.SSS}){blue} %clr(---){faint} %clr([%15.15t]){yellow} %clr(:){red} %clr(%m){faint}%n"
