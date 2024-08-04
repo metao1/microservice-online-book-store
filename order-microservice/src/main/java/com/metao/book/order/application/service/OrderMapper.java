@@ -1,6 +1,5 @@
 package com.metao.book.order.application.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.metao.book.OrderCreatedEventOuterClass.OrderCreatedEvent;
 import com.metao.book.OrderCreatedEventOuterClass.OrderCreatedEvent.Status;
 import com.metao.book.order.application.dto.CreateOrderDTO;
@@ -12,8 +11,6 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @RequiredArgsConstructor
 public abstract class OrderMapper {
-
-    protected final ObjectMapper objectMapper;
 
     public OrderCreatedEvent toOrderCreatedEvent(CreateOrderDTO dto) {
         return OrderCreatedEvent.newBuilder()

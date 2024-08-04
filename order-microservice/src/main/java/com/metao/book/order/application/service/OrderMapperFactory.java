@@ -1,6 +1,5 @@
 package com.metao.book.order.application.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.metao.book.OrderCreatedEventOuterClass.OrderCreatedEvent;
 import com.metao.book.order.domain.OrderEntity;
 import com.metao.book.shared.domain.financial.Money;
@@ -8,17 +7,11 @@ import com.metao.book.shared.domain.order.OrderStatus;
 import java.math.BigDecimal;
 import java.util.Currency;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Slf4j
 @Component
 public class OrderMapperFactory extends OrderMapper {
-
-    @Autowired
-    public OrderMapperFactory(ObjectMapper objectMapper) {
-        super(objectMapper);
-    }
 
     @Override
     public <T> OrderEntity toEntity(T order) {

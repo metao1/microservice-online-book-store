@@ -1,6 +1,5 @@
 package com.metao.book.order.application.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.metao.book.order.OrderPaymentEvent;
 import com.metao.book.order.domain.OrderEntity;
 import com.metao.book.shared.domain.financial.Money;
@@ -11,10 +10,6 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class OrderPaymentFactory extends OrderMapper {
-
-    public OrderPaymentFactory(ObjectMapper objectMapper) {
-        super(objectMapper);
-    }
 
     @Override
     public <T> OrderEntity toEntity(T order) {
