@@ -42,7 +42,7 @@ public class KafkaConsumerConfig {
     public ConcurrentKafkaListenerContainerFactory<String, ProductCreatedEvent> productCreatedEventKafkaListenerContainerFactory() {
         ConcurrentKafkaListenerContainerFactory<String, ProductCreatedEvent> factory = new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(productPaymentEventConsumerFactory());
-        factory.setConcurrency(1);
+        factory.setConcurrency(10);
 
         return factory;
     }
@@ -51,7 +51,7 @@ public class KafkaConsumerConfig {
     public ConcurrentKafkaListenerContainerFactory<String, ProductUpdatedEvent> productUpdatedEventKafkaListenerContainerFactory() {
         ConcurrentKafkaListenerContainerFactory<String, ProductUpdatedEvent> factory = new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(productUpdatedEventConsumerFactory());
-        factory.setConcurrency(1);
+        factory.setConcurrency(10);
 
         return factory;
     }
