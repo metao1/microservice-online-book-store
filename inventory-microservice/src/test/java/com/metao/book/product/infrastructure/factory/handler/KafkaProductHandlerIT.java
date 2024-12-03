@@ -35,7 +35,7 @@ class KafkaProductHandlerIT extends BaseKafkaIT {
     private static final String ASIN = "ASIN";
     @Autowired
     KafkaTemplate<String, ProductCreatedEvent> kafkaTemplate;
-    @Value("${kafka.topic.product.name}")
+    @Value("${kafka.topic.product-created.name}")
     private String productTopic;
     @Autowired
     private KafkaProductConsumerTestConfig consumer;

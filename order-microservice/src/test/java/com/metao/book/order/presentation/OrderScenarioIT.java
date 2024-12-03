@@ -7,6 +7,7 @@ import static com.metao.book.order.OrderTestConstant.PRODUCT_ID;
 import static com.metao.book.order.OrderTestConstant.QUANTITY;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -154,18 +155,16 @@ class OrderScenarioIT extends BaseKafkaIT {
                 .content(StreamBuilderTestUtils.convertObjectToJsonBytes(objectMapper, updatedOrder)))
             .andExpect(status().isOk());
 
-        orderRepository.findByOrderId(order.getOrderId()).ifPresent(orderEntity -> {
-            assertThat(orderEntity).satisfies(oe -> {
-                assertThat(oe.getOrderId()).isEqualTo(order.getOrderId());
-                assertThat(oe.getProductId()).isEqualTo(order.getProductId());
-                assertThat(oe.getCurrency().getCurrencyCode()).isEqualTo(order.getCurrency().getCurrencyCode());
-                assertThat(oe.getQuantity().setScale(2, RoundingMode.HALF_UP))
-                    .isEqualTo(order.getQuantity().setScale(2, RoundingMode.HALF_UP));
-                assertThat(oe.getStatus()).isEqualTo(order.getStatus());
-                assertThat(oe.getCustomerId()).isEqualTo(order.getCustomerId());
-                assertThat(oe.getCreatedTime()).isEqualTo(order.getCreatedTime());
-            });
-        });
+        orderRepository.findByOrderId(order.getOrderId()).ifPresent(oe -> assertAll(() -> {
+            assertThat(oe.getOrderId()).isEqualTo(order.getOrderId());
+            assertThat(oe.getProductId()).isEqualTo(order.getProductId());
+            assertThat(oe.getCurrency().getCurrencyCode()).isEqualTo(order.getCurrency().getCurrencyCode());
+            assertThat(oe.getQuantity().setScale(2, RoundingMode.HALF_UP))
+                .isEqualTo(order.getQuantity().setScale(2, RoundingMode.HALF_UP));
+            assertThat(oe.getStatus()).isEqualTo(order.getStatus());
+            assertThat(oe.getCustomerId()).isEqualTo(order.getCustomerId());
+            assertThat(oe.getCreatedTime()).isEqualTo(order.getCreatedTime());
+        }));
     }
 
     @Test
