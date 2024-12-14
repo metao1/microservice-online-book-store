@@ -3,6 +3,7 @@ package com.metao.book.order.application.config;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
+import com.metao.book.shared.application.kafka.KafkaFactory;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -13,7 +14,7 @@ class KafkaFactoryTest {
 
     KafkaTemplate<String, String> kafkaTemplate = mock(KafkaTemplate.class);
 
-    KafkaFactory<String> kafkaFactory = new KafkaFactory<>(kafkaTemplate);
+    KafkaFactory<String> kafkaFactory = new KafkaFactory<>(String.class, kafkaTemplate);
 
     @Test
     void testWhenSendingKafkaMessageThenKafkaTemplateSent() {
@@ -24,7 +25,8 @@ class KafkaFactoryTest {
 
         //WHEN
         kafkaFactory.subscribe();
-        kafkaFactory.submit(topic, key, message);
+        kafkaFactory.setTopic(topic);
+        kafkaFactory.submit(key, message);
         kafkaFactory.publish();
 
         //THEN

@@ -1,4 +1,4 @@
-package com.metao.book.order;
+package com.metao.shared.test;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.test.context.DynamicPropertyRegistry;
