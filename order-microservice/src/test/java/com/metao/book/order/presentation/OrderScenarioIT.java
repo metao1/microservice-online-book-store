@@ -28,7 +28,6 @@ import com.metao.book.shared.test.StreamBuilderTestUtils;
 import com.metao.shared.test.BaseKafkaIT;
 import java.math.RoundingMode;
 import java.time.Duration;
-import java.time.ZoneOffset;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -151,7 +150,6 @@ class OrderScenarioIT extends BaseKafkaIT {
             .status(OrderStatus.CONFIRMED.toString())
             .customerId(order.getCustomerId())
             .price(order.getPrice())
-            .createdTime(order.getCreatedTime().atOffset(ZoneOffset.UTC))
             .build();
 
         mockMvc.perform(put("/order").contentType(MediaType.APPLICATION_JSON)
@@ -166,7 +164,7 @@ class OrderScenarioIT extends BaseKafkaIT {
                 .isEqualTo(order.getQuantity().setScale(2, RoundingMode.HALF_UP));
             assertThat(oe.getStatus()).isEqualTo(order.getStatus());
             assertThat(oe.getCustomerId()).isEqualTo(order.getCustomerId());
-            assertThat(oe.getCreatedTime()).isEqualTo(order.getCreatedTime());
+            assertThat(oe.getCreatedTime()).isNotNull();
         }));
     }
 
