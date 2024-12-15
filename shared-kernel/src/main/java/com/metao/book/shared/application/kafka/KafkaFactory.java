@@ -25,7 +25,7 @@ import org.springframework.kafka.support.SendResult;
  */
 @Slf4j
 @RequiredArgsConstructor
-public class KafkaFactory<V> extends EventHandler<List<CompletableFuture<SendResult<String, V>>>> {
+public class KafkaFactory<V> extends EventHandler<CompletableFuture<SendResult<String, V>>> {
 
     private final DelayQueue<Message<String, V>> delayeds = new DelayQueue<>();
     @Setter
@@ -43,7 +43,7 @@ public class KafkaFactory<V> extends EventHandler<List<CompletableFuture<SendRes
             }
 
             @Override
-            public void onNext(List<CompletableFuture<SendResult<String, V>>> item) {
+            public void onNext(CompletableFuture<SendResult<String, V>> item) {
                 log.debug("Item received: {}", item);
             }
 
@@ -68,11 +68,14 @@ public class KafkaFactory<V> extends EventHandler<List<CompletableFuture<SendRes
     }
 
     @Override
-    public List<CompletableFuture<SendResult<String, V>>> getEvent() {
-        for (Message<String, V> delayed : delayeds) {
-            list.add(kafkaTemplate.send(delayed.topic, delayed.key, delayed.message));
+    public CompletableFuture<SendResult<String, V>> getEvent() {
+        CompletableFuture<SendResult<String, V>> send = null;
+        if (!delayeds.isEmpty()) {
+            final Message<String, V> message = delayeds.remove();
+            send = kafkaTemplate.send(message.topic, message.key,
+                message.message);
         }
-        return list;
+        return send;
     }
 
     @EventListener

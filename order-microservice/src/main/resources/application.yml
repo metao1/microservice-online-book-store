@@ -65,10 +65,10 @@ kafka:
       id: "order-created-id"
       name: "order-created"
       group-id: "order-created-group"
-    order-payment:
-      id: "order-payment-id"
-      name: "order-payment"
-      group-id: "order-payment-group"
+    order-updated:
+      id: "order-updated-id"
+      name: "order-updated"
+      group-id: "order-updated-group"
 
 
 logging:

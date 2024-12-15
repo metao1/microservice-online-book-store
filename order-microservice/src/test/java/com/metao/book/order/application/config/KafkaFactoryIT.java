@@ -47,8 +47,7 @@ class KafkaFactoryIT extends BaseKafkaIT {
     @SneakyThrows
     @DisplayName("When sending Kafka multiple messages then all messages sent successfully")
     void testWhenSendingMultipleKafkaMessagesThenSentSuccessfully() {
-
-        final KafkaFactory<OrderCreatedEvent> kafkaFactory = (KafkaFactory<OrderCreatedEvent>) kafkaFactoryMap.get(
+        KafkaFactory<OrderCreatedEvent> kafkaFactory = (KafkaFactory<OrderCreatedEvent>) kafkaFactoryMap.get(
             OrderCreatedEvent.class);
 
         IntStream.range(0, 10).boxed().forEach(i -> kafkaFactory.submit("order-created", getCreatedEvent()));

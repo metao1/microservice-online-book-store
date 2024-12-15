@@ -59,7 +59,7 @@ public class OrderController {
 
     @PutMapping
     public String updateOrder(@RequestBody @Valid OrderDTO orderDto) {
-        var updatedOrder = KafkaOrderMapper.toOrderCreatedEvent(orderDto);
+        var updatedOrder = KafkaOrderMapper.toOrderUpdatedEvent(orderDto);
         return orderEventHandler.handle(updatedOrder.getId(), updatedOrder);
     }
 }
