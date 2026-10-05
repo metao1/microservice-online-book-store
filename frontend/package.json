@@ -4,7 +4,7 @@
     "private": true,
     "dependencies": {
         "amazon-product-api": "^0.0.5",
-        "axios": "^1.18.0",
+        "axios": "^1.20.0",
         "bootstrap": "^5.3.3",
         "http-proxy-middleware": "3.0.7",
         "keycloak-js": "26.2.2",
